@@ -18,10 +18,12 @@ use App\Http\Controllers\ReportController;
 |
 */
 
-//Login Controller
+// Authentication Routes
 Route::get('/', [AuthController::class, 'login'])->name('login');
-Route::post('/auth/login', [AuthController::class, 'postLogin']);
+Route::get('/auth/login', [AuthController::class, 'postLogin']);
+Route::get('/auth/callback', [AuthController::class, 'handleAzureCallback']);
 Route::get('/logout', [AuthController::class, 'logout']);
+
 
 Route::middleware(['auth'])->group(function () {
     //Home Controller

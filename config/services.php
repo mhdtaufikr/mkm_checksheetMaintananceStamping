@@ -33,8 +33,13 @@ return [
     'azure' => [
         'client_id' => env('AZURE_AD_CLIENT_ID'),
         'client_secret' => env('AZURE_AD_CLIENT_SECRET'),
-        'redirect' => env('AZURE_AD_REDIRECT_URI'),
+        'redirect' => env('APP_URL') . '/auth/login',
+        'tenant' => env('AZURE_AD_TENANT_ID'),
     ],
+
+
+
+
 
 
 ];

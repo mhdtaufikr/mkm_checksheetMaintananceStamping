@@ -89,7 +89,7 @@
                                             <button type="submit" class="btn btn-dark">Login</button>
                                         </div>
                                     </form>
-
+                                    <a href="{{ url('/auth/callback') }}">Login with Azure AD</a>
                                 </div>
                                 <div class="card-footer text-center justify-content-center">
                                     <div class="col-12 small">Copyright PT Mitsubishi Krama Yudha Motors and Manufacturing&copy; 2023</div>
