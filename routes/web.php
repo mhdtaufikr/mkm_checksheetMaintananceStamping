@@ -7,6 +7,7 @@ use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RulesController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\MachineController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,9 +20,13 @@ use App\Http\Controllers\ReportController;
 */
 
 // Authentication Routes
+// Route::get('/', [AuthController::class, 'login'])->name('login');
+// Route::get('/auth/login', [AuthController::class, 'postLogin']);
+// Route::get('/auth/callback', [AuthController::class, 'handleAzureCallback']);
+// Route::get('/logout', [AuthController::class, 'logout']);
+
 Route::get('/', [AuthController::class, 'login'])->name('login');
-Route::get('/auth/login', [AuthController::class, 'postLogin']);
-Route::get('/auth/callback', [AuthController::class, 'handleAzureCallback']);
+Route::post('/auth/login', [AuthController::class, 'postLogin']);
 Route::get('/logout', [AuthController::class, 'logout']);
 
 
@@ -49,4 +54,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user/revoke/{user}', [UserController::class, 'revoke'])->middleware(['checkRole:IT']);
     Route::get('/user/access/{user}', [UserController::class, 'access'])->middleware(['checkRole:IT']);
 
+    //Master Mechine
+    Route::get('/master/mechine', [MachineController::class, 'index'])->middleware(['checkRole:IT']);
+    Route::post('/master/mechine/store', [MachineController::class, 'store'])->middleware(['checkRole:IT']);
+    Route::get('/master/mechine/detail/{id}', [MachineController::class, 'detail'])->name('machine.detail')->middleware(['checkRole:IT']);
+    Route::post('/master/checksheet/type/store', [MachineController::class, 'storeChecksheet'])->middleware(['checkRole:IT']);
+    Route::post('/master/checksheet/item/store', [MachineController::class, 'storeItemChecksheet'])->middleware(['checkRole:IT']);
+    Route::delete('/master/delete/checksheet/{id}', [MachineController::class, 'deleteChecksheet'])->middleware(['checkRole:IT']);
+    Route::delete('/master/delete/checksheet/item/{id}', [MachineController::class, 'deleteChecksheetItem'])->middleware(['checkRole:IT']);
+    Route::patch('/master/checksheet/update/{id}', [MachineController::class, 'updateChecksheet'])->middleware(['checkRole:IT']);
+    Route::patch('/master/checksheet/item/update/{id}', [MachineController::class, 'updateChecksheetItem'])->middleware(['checkRole:IT']);
 });

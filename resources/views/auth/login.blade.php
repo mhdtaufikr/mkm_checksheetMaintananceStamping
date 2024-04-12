@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>MKM Checksheet ME Stamping</title>
+    <title>MKM Checksheet ME (Stamping)</title>
     <link href="{{asset('assets/css/styles.css')}}" rel="stylesheet" />
     <link rel="icon" href="{{ asset('assets/img/logo_kop2.gif') }}">
     <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
@@ -76,7 +76,7 @@
                                         @csrf
                                         <!-- Form Group (email address)-->
                                         <div class="mb-3">
-                                            <label class="small mb-1" for="inputEmailAddress">Email</label>
+                                            <label class="small mb-1" for="inputEmailAddress">Username</label>
                                             <input class="form-control" id="inputEmailAddress" type="text" placeholder="Enter email address" name="email" />
                                         </div>
                                         <!-- Form Group (password)-->
@@ -89,7 +89,6 @@
                                             <button type="submit" class="btn btn-dark">Login</button>
                                         </div>
                                     </form>
-                                    <a href="{{ url('/auth/callback') }}">Login with Azure AD</a>
                                 </div>
                                 <div class="card-footer text-center justify-content-center">
                                     <div class="col-12 small">Copyright PT Mitsubishi Krama Yudha Motors and Manufacturing&copy; 2023</div>

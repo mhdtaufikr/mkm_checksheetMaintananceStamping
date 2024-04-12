@@ -9,6 +9,19 @@
                     <div class="nav-link-icon"><i class="fas fa-fw fa-home"></i></div>
                     Home
                 </a>
+                 <!-- Sidenav Menu Heading (Master)-->
+                 <div class="sidenav-menu-heading">Master</div>
+                 <!-- Sidenav Accordion (Master)-->
+                 <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapsemaster" aria-expanded="false" aria-controls="collapsemaster">
+                     <div class="nav-link-icon"><i class="fas fa-database"></i></div>
+                     Master Data
+                     <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                 </a>
+                 <div class="collapse" id="collapsemaster" data-bs-parent="#accordionSidenav">
+                     <nav class="sidenav-menu-nested nav">
+                        <a class="nav-link" href="{{url('/master/mechine')}}">Mechine Checksheet</a>
+                     </nav>
+                 </div>
                 @if(\Auth::user()->role === 'IT')
                 <!-- Sidenav Menu Heading (Core)-->
                 <div class="sidenav-menu-heading">Configuration</div>
