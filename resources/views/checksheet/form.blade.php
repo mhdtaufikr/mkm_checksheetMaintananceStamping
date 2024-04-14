@@ -62,7 +62,7 @@
               <div class="card-body">
                 <div class="row">
                     <div class="mb-3 col-sm-12">
-                    <form action="{{ url('/checksheet/scan') }}" method="POST">
+                    <form action="{{ url('/checksheet/store') }}" method="POST">
                         @csrf
                         <div class="modal-body">
                             <div class="row">

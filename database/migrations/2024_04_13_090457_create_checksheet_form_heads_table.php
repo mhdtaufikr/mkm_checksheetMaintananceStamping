@@ -27,11 +27,9 @@ class CreateChecksheetFormHeadsTable extends Migration
             $table->date('planning_date');
             $table->date('actual_date');
             $table->string('status');
-            $table->unsignedBigInteger('created_by');
+            $table->string('created_by');
             $table->timestamps();
 
-            // Foreign key for the user who created the checksheet
-            $table->foreign('created_by')->references('id')->on('users');
         });
     }
 

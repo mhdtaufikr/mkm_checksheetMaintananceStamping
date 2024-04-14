@@ -67,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/master/checksheet/item/update/{id}', [MachineController::class, 'updateChecksheetItem'])->middleware(['checkRole:IT']);
 
     //Master Checksheet form/checksheet/scan
-    Route::get('/checksheet', [ChecksheetController::class, 'index'])->middleware(['checkRole:IT']);
+    Route::get('/checksheet', [ChecksheetController::class, 'index'])->middleware(['checkRole:IT'])->name('machine');
     Route::post('/checksheet/scan', [ChecksheetController::class, 'checksheetScan'])->middleware(['checkRole:IT']);
+    Route::post('/checksheet/store', [ChecksheetController::class, 'storeHeadForm'])->middleware(['checkRole:IT']);
+    Route::get('/checksheet/fill/{id}', [ChecksheetController::class, 'checksheetfill'])->middleware(['checkRole:IT'])->name('fill');
+    Route::post('/checksheet/store/detail', [ChecksheetController::class, 'storeDetailForm'])->middleware(['checkRole:IT']);
 });
