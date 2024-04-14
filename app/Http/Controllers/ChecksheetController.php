@@ -116,5 +116,16 @@ class ChecksheetController extends Controller
     return redirect()->route('machine')->with('status', 'Checksheet submitted successfully.');
 }
 
+    public function checksheetDetail($id){
+        $id = decrypt($id);
+        $itemHead = ChecksheetFormHead::where('id',$id)->first();
+        $itemDetail = ChecksheetFormDetail::where('id_header',$id)->get();
+    
+        return view('checksheet.detail',compact('itemHead','itemDetail'));
+    }
+
+    public function checksheetSignature(Request $request){
+        dd($request->all());
+    }
 
 }
