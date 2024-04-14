@@ -172,9 +172,9 @@ public function storeItemChecksheet(Request $request){
                 // Find the checksheet item
                 $checksheetItem = ChecksheetItem::findOrFail($id);
             
-                // Update the item name if it's different from the current value
-                if ($checksheetItem->item_name !== $request->mechine) {
+                if ($checksheetItem->item_name !== $request->mechine || $checksheetItem->checksheet_id != $request->checksheet_id) {
                     $checksheetItem->item_name = $request->mechine;
+                    $checksheetItem->checksheet_id = $request->type;
                 }
             
                 // Check if any changes were made

@@ -6,8 +6,12 @@
                 <div class="sidenav-menu-heading">Core</div>
                 <!-- Sidenav Link (Charts)-->
                 <a class="nav-link" href="{{url('/home')}}">
-                    <div class="nav-link-icon"><i class="fas fa-fw fa-home"></i></div>
+                    <div style="margin-left: -2px" class="nav-link-icon"><i class="fas fa-home"></i></div>
                     Home
+                </a>
+                <a class="nav-link" href="{{url('/checksheet')}}">
+                    <div class="nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
+                    Checksheet
                 </a>
                  <!-- Sidenav Menu Heading (Master)-->
                  <div class="sidenav-menu-heading">Master</div>

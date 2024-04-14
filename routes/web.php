@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RulesController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\MachineController;
+use App\Http\Controllers\ChecksheetController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/user/update/{user}', [UserController::class, 'update'])->middleware(['checkRole:IT']);
     Route::get('/user/revoke/{user}', [UserController::class, 'revoke'])->middleware(['checkRole:IT']);
     Route::get('/user/access/{user}', [UserController::class, 'access'])->middleware(['checkRole:IT']);
-
+   
     //Master Mechine
     Route::get('/master/mechine', [MachineController::class, 'index'])->middleware(['checkRole:IT']);
     Route::post('/master/mechine/store', [MachineController::class, 'store'])->middleware(['checkRole:IT']);
@@ -64,4 +65,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/master/delete/checksheet/item/{id}', [MachineController::class, 'deleteChecksheetItem'])->middleware(['checkRole:IT']);
     Route::patch('/master/checksheet/update/{id}', [MachineController::class, 'updateChecksheet'])->middleware(['checkRole:IT']);
     Route::patch('/master/checksheet/item/update/{id}', [MachineController::class, 'updateChecksheetItem'])->middleware(['checkRole:IT']);
+
+    //Master Checksheet form/checksheet/scan
+    Route::get('/checksheet', [ChecksheetController::class, 'index'])->middleware(['checkRole:IT']);
+    Route::post('/checksheet/scan', [ChecksheetController::class, 'checksheetScan'])->middleware(['checkRole:IT']);
 });

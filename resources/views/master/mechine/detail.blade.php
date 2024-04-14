@@ -293,6 +293,7 @@
                       <tr>
                         <th>No</th>
                         <th>Item Name</th>
+                        <th>Checksheet Category</th>
                         <th>Action</th>
                       </tr>
                       </thead>
@@ -304,6 +305,18 @@
                         <tr>
                             <td>{{ $no++ }}</td>
                             <td>{{$data->item_name}}</td>
+                            <td>
+                              @php
+                                  // Query the checksheets table to get the checksheet_category
+                                  $checksheet3 = App\Models\Checksheet::where('checksheet_id', $data->checksheet_id)->first();
+                                  // Check if the checksheet exists
+                                  if ($checksheet3) {
+                                      echo $checksheet3->checksheet_category;
+                                  } else {
+                                      echo 'N/A'; // Display 'N/A' if the checksheet does not exist
+                                  }
+                              @endphp
+                          </td>
                             
                             <td>
                               <button title="Edit Dropdown" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-update-item{{ $data->item_id }}">
