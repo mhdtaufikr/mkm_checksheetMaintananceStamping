@@ -9,17 +9,20 @@ use App\Models\Checksheet;
 use App\Models\ChecksheetItem;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ChecksheetFormDetail;
+use App\Models\Signature; 
 
 class ChecksheetController extends Controller
 {
     public function index(){
 
-        $item = ChecksheetFormHead::get();
-
+        $item = Signature::join('checksheet_form_heads', 'signatures.checksheet_id', '=', 'checksheet_form_heads.id')
+        ->select('signatures.*', 'checksheet_form_heads.*')
+        ->get();
         return view('checksheet.index',compact('item'));
     }
 
     public function checksheetScan(Request $request){
+        dd($request->all());
         $item = Machine::where('machine_name',$request->mechine)->first();
         
         return view('checksheet.form',compact('item'));
@@ -125,7 +128,30 @@ class ChecksheetController extends Controller
     }
 
     public function checksheetSignature(Request $request){
-        dd($request->all());
+        // Decode the JSON signature data
+        $signatures = json_decode($request->signature1);
+        
+        // Extract the checksheet ID
+        $checksheet_id = $request->checksheet_id;
+        
+        // Create a new instance of the Signature model
+        $signature = new Signature();
+
+        // Fill the model attributes
+        $signature->checksheet_id = $checksheet_id;
+        $signature->signature1 = $signatures->signature1;
+        $signature->signature2 = $signatures->signature2;
+        $signature->signature3 = $signatures->signature3;
+        $signature->signature4 = $signatures->signature4;
+
+        // Save the signature to the database
+        $signature->save();
+
+        return redirect()->back()->with('status', 'Success Sign Checksheet');
+        
+        // Optionally, you can return a response or redirect the user
     }
+
+    
 
 }

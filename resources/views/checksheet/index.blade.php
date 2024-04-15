@@ -63,14 +63,20 @@
                                             <form action="{{ url('/checksheet/scan') }}" method="POST">
                                                 @csrf
                                                 <div class="modal-body">
-                                                    <div class="form-group">
+                                                    <div class="form-group mb-4">
                                                         <input type="text" class="form-control" id="mechine" name="mechine" placeholder="Enter Mechine Name" required>
+                                                    </div>
+                                                    <div class="d-flex justify-content-center">
+                                                        <div id="qr-reader" style="width:500px"></div>
+                                                        <div id="qr-reader-results"></div>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                    <button id="submitBtn" type="submit" class="btn btn-primary">Submit</button>
                                                 </div>
+                                                
                                             </form>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -134,95 +140,100 @@
                             @foreach ($item as $data)
                             <!-- Modal -->
                             <div class="modal fade" id="modal-signature{{ $data->id }}" tabindex="-1" aria-labelledby="modal-signature-label" aria-hidden="true">
-                              <div class="modal-dialog modal-lg">
-                                  <div class="modal-content">
-                                      <div class="modal-header">
-                                          <h5 class="modal-title" id="modal-signature-label">{{$data->machine_name}} ({{$data->op_number}})</h5>
-                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                      </div>
-                                      <div class="modal-body">
-                              <form action="{{ url('/checksheet/signature') }}" method="POST">
-                                  @csrf
-                                  <input type="hidden" name="checksheet_id" value="{{ $data->id }}">
-                                  <table class="table table-bordered">
-                                      <thead>
-                                          <tr>
-                                              <th>Approval</th>
-                                              <th colspan="2">Checked</th>
-                                              <th>Arranged</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody>
-                                          <tr>
-                                              <!-- Approval -->
-                                              <td>
-                                                  <div class="border p-3 mb-3">
-                                                      <h5 class="text-center mb-3">Approval</h5>
-                                                      <div class="mb-3">
-                                                          <label for="signature1" class="form-label">Approved by Person 1:</label>
-                                                          <div id="signature-pad-1" class="signature-pad">
-                                                              <canvas style="width: 150px; height: 100px;"></canvas>
-                                                              <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
-                                                          </div>
-                                                          <input type="hidden" id="signature1" name="signature1" class="form-control">
-                                                      </div>
-                                                  </div>
-                                              </td>
-                                              <!-- Checked -->
-                                              <td colspan="2">
-                                                  <div class="border p-3 mb-3">
-                                                      <h5 class="text-center mb-3">Checked</h5>
-                                                      <div class="row">
-                                                          <!-- First signature pad for Person 2 -->
-                                                          <div class="col-md-6">
-                                                              <div class="mb-3">
-                                                                  <label for="signature2" class="form-label">Checked by Person 2:</label>
-                                                                  <div id="signature-pad-2" class="signature-pad">
-                                                                      <canvas style="width: 150px; height: 100px;"></canvas>
-                                                                      <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
-                                                                  </div>
-                                                                  <input type="hidden" id="signature2" name="signature2" class="form-control">
-                                                              </div>
-                                                          </div>
-                                                          <!-- Second signature pad for Person 3 -->
-                                                          <div class="col-md-6">
-                                                              <div class="mb-3">
-                                                                  <label for="signature3" class="form-label">Checked by Person 3:</label>
-                                                                  <div id="signature-pad-3" class="signature-pad">
-                                                                      <canvas style="width: 150px; height: 100px;"></canvas>
-                                                                      <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
-                                                                  </div>
-                                                                  <input type="hidden" id="signature3" name="signature3" class="form-control">
-                                                              </div>
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                              </td>
-                                              <!-- Arranged -->
-                                              <td>
-                                                  <div class="border p-3 mb-3">
-                                                      <h5 class="text-center mb-3">Arranged</h5>
-                                                      <div class="mb-3">
-                                                          <label for="signature4" class="form-label">Arranged by Person 4:</label>
-                                                          <div id="signature-pad-4" class="signature-pad">
-                                                              <canvas style="width: 150px; height: 100px;"></canvas>
-                                                              <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
-                                                          </div>
-                                                          <input type="hidden" id="signature4" name="signature4" class="form-control">
-                                                      </div>
-                                                  </div>
-                                              </td>
-                                          </tr>
-                                      </tbody>
-                                  </table>
-                                  <button type="submit" class="btn btn-primary">Submit</button>
-                              </form>
-                          </div>
-                          
-                        </div>
-                      </div>
-                    </div>
-                        @endforeach
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modal-signature-label">{{$data->machine_name}} ({{$data->op_number}})</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="signatureForm{{ $data->id }}" action="{{ url('/checksheet/signature') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="checksheet_id" value="{{ $data->id }}">
+                                                <!-- Hidden input fields for signature data -->
+                                                @for ($i = 1; $i <= 4; $i++)
+                                                    <input type="hidden" id="signature{{ $i }}{{ $data->id }}" name="signature{{ $i }}">
+                                                @endfor
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Approval</th>
+                                                            <th colspan="2">Checked</th>
+                                                            <th>Arranged</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <!-- Approval -->
+                                                            <td>
+                                                                <div class="border p-3 mb-3">
+                                                                    <h5 class="text-center mb-3">Approval</h5>
+                                                                    <div class="mb-3">
+                                                                        <label for="signature1" class="form-label">Approved by Person 1:</label>
+                                                                        <div id="signature-pad-1{{ $data->id }}" class="signature-pad">
+                                                                            @if (isset($data->signature1))
+                                                                                <img style="width: 150px; height: 100px;" src="{{ $data->signature1 }}" alt="Signature">
+                                                                            @else
+                                                                                <canvas style="width: 150px; height: 100px;"></canvas>
+                                                                                <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <!-- Checked -->
+                                                            <td colspan="2">
+                                                                <div class="border p-3 mb-3">
+                                                                    <h5 class="text-center mb-3">Checked</h5>
+                                                                    <div class="row">
+                                                                        @for ($j = 2; $j <= 3; $j++)
+                                                                            <div class="col-md-6">
+                                                                                <div class="mb-3">
+                                                                                    <label for="signature{{ $j }}" class="form-label">Checked by Person {{ $j }}:</label>
+                                                                                    <div id="signature-pad-{{ $j }}{{ $data->id }}" class="signature-pad">
+                                                                                        @if (isset($data->{"signature$j"}))
+                                                                                            <img style="width: 150px; height: 100px;" src="{{ $data->{"signature$j"} }}" alt="Signature">
+                                                                                        @else
+                                                                                            <canvas style="width: 150px; height: 100px;"></canvas>
+                                                                                            <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
+                                                                                        @endif
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        @endfor
+                                                                    </div>
+                                                                    
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <!-- Arranged -->
+                                                            <td>
+                                                                <div class="border p-3 mb-3">
+                                                                    <h5 class="text-center mb-3">Arranged</h5>
+                                                                    <div class="mb-3">
+                                                                        <label for="signature4" class="form-label">Arranged by Person 4:</label>
+                                                                        <div id="signature-pad-4{{ $data->id }}" class="signature-pad">
+                                                                            @if (isset($data->signature4))
+                                                                            <img style="width: 150px; height: 100px;" src="{{ $data->signature1 }}" alt="Signature">
+                                                                        @else
+                                                                            <canvas style="width: 150px; height: 100px;"></canvas>
+                                                                            <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
+                                                                        @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <button type="submit" class="btn btn-primary submit-btn">Submit</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                            
 
 
                         <!-- /.col -->
@@ -242,60 +253,82 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Signature Pad for Person 1
-        var canvas1 = document.querySelector('#signature-pad-1 canvas');
-        var signaturePad1 = new SignaturePad(canvas1);
-        var clearButton1 = document.querySelector('#signature-pad-1 .clear-btn');
-        clearButton1.addEventListener('click', function () {
-            signaturePad1.clear();
+    @foreach ($item as $data)
+    var signaturePads{{ $data->id }} = [];
+
+    // Initialize Signature Pads for Persons
+    for (var i = 1; i <= 4; i++) {
+        var canvas{{ $data->id }} = document.querySelector(`#signature-pad-${i}{{ $data->id }} canvas`);
+        var signaturePad{{ $data->id }} = new SignaturePad(canvas{{ $data->id }});
+        var clearButton{{ $data->id }} = document.querySelector(`#signature-pad-${i}{{ $data->id }} .clear-btn`);
+
+        signaturePads{{ $data->id }}.push({
+            pad: signaturePad{{ $data->id }},
+            clearButton: clearButton{{ $data->id }}
         });
 
-        // Initialize Signature Pad for Person 2
-        var canvas2 = document.querySelector('#signature-pad-2 canvas');
-        var signaturePad2 = new SignaturePad(canvas2);
-        var clearButton2 = document.querySelector('#signature-pad-2 .clear-btn');
-        clearButton2.addEventListener('click', function () {
-            signaturePad2.clear();
-        });
+        clearButton{{ $data->id }}.addEventListener('click', function (index) {
+            return function () {
+                signaturePads{{ $data->id }}[index].pad.clear();
+            };
+        }(i - 1));
+    }
 
-        // Initialize Signature Pad for Person 3
-        var canvas3 = document.querySelector('#signature-pad-3 canvas');
-        var signaturePad3 = new SignaturePad(canvas3);
-        var clearButton3 = document.querySelector('#signature-pad-3 .clear-btn');
-        clearButton3.addEventListener('click', function () {
-            signaturePad3.clear();
-        });
-
-        // Initialize Signature Pad for Person 4
-        var canvas4 = document.querySelector('#signature-pad-4 canvas');
-        var signaturePad4 = new SignaturePad(canvas4);
-        var clearButton4 = document.querySelector('#signature-pad-4 .clear-btn');
-        clearButton4.addEventListener('click', function () {
-            signaturePad4.clear();
-        });
-
-       // Capture and store signatures when form is submitted
-    var form = document.querySelector('#signatureForm');
-    form.addEventListener('submit', function (event) {
+    // Capture and store signatures when form is submitted
+    var form{{ $data->id }} = document.querySelector('#signatureForm{{ $data->id }}');
+    form{{ $data->id }}.addEventListener('submit', function (event) {
         event.preventDefault(); // Prevent the form from submitting normally
-        
-        // Convert signatures to Base64
-        var signature1 = signaturePad1.isEmpty() ? null : signaturePad1.toDataURL();
-        var signature2 = signaturePad2.isEmpty() ? null : signaturePad2.toDataURL();
-        var signature3 = signaturePad3.isEmpty() ? null : signaturePad3.toDataURL();
-        var signature4 = signaturePad4.isEmpty() ? null : signaturePad4.toDataURL();
-        
+
+        // Convert signatures to JSON
+        var signatureData{{ $data->id }} = {
+            "signature1": signaturePads{{ $data->id }}[0].pad.isEmpty() ? null : signaturePads{{ $data->id }}[0].pad.toDataURL(),
+            "signature2": signaturePads{{ $data->id }}[1].pad.isEmpty() ? null : signaturePads{{ $data->id }}[1].pad.toDataURL(),
+            "signature3": signaturePads{{ $data->id }}[2].pad.isEmpty() ? null : signaturePads{{ $data->id }}[2].pad.toDataURL(),
+            "signature4": signaturePads{{ $data->id }}[3].pad.isEmpty() ? null : signaturePads{{ $data->id }}[3].pad.toDataURL()
+        };
+
         // Set the signature values to the hidden inputs
-        document.querySelector('#signature1').value = signature1;
-        document.querySelector('#signature2').value = signature2;
-        document.querySelector('#signature3').value = signature3;
-        document.querySelector('#signature4').value = signature4;
+        document.querySelector('#signature1{{ $data->id }}').value = JSON.stringify(signatureData{{ $data->id }});
 
         // Submit the form
-        form.submit();
-        });
+        form{{ $data->id }}.submit();
+    });
+    @endforeach
+});
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script>
+    function docReady(fn) {
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+
+    docReady(function () {
+        var resultContainer = document.getElementById('qr-reader-results');
+        var lastResult, countResults = 0;
+
+        function onScanSuccess(decodedText, decodedResult) {
+            if (decodedText !== lastResult) {
+                ++countResults;
+                lastResult = decodedText;
+                // Set the scanned value to the input field
+                document.getElementById('mechine').value = decodedText;
+                // Automatically submit the form
+                document.getElementById('submitBtn').click();
+            }
+        }
+
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
     });
 </script>
+
+
 
 
 
