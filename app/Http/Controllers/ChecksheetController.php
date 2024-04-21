@@ -9,28 +9,27 @@ use App\Models\Checksheet;
 use App\Models\ChecksheetItem;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ChecksheetFormDetail;
-use App\Models\Signature; 
+use App\Models\Signature;
 
 class ChecksheetController extends Controller
 {
     public function index(){
 
-        $item = Signature::join('checksheet_form_heads', 'signatures.checksheet_id', '=', 'checksheet_form_heads.id')
+        $item = ChecksheetFormHead::leftjoin('signatures','checksheet_form_heads.id' , '=', 'signatures.checksheet_id')
         ->select('signatures.*', 'checksheet_form_heads.*')
         ->get();
         return view('checksheet.index',compact('item'));
     }
 
     public function checksheetScan(Request $request){
-        dd($request->all());
         $item = Machine::where('machine_name',$request->mechine)->first();
-        
+
         return view('checksheet.form',compact('item'));
     }
 
 
     public function storeHeadForm(Request $request){
-     
+
         // Create a new instance of ChecksheetHead model
         $checksheetHead = new ChecksheetFormHead();
         // Assign values from the request to the model attributes
@@ -47,17 +46,17 @@ class ChecksheetController extends Controller
         $checksheetHead->actual_date = $request->actual_date;
         $checksheetHead->status = 0; // Set status to 0
         $checksheetHead->created_by = Auth::user()->name;
-    
+
         // Save the data to the database
         $checksheetHead->save();
-    
+
         // Get the ID of the newly created record
         $id = $checksheetHead->id;
-    
+
         // Redirect the user to the 'fill' route with the ID as a parameter
         return redirect()->route('fill', ['id' => encrypt($id)])->with('status', 'Checksheet head form submitted successfully.');
     }
-    
+
 
     public function checksheetfill($id){
         $id = decrypt($id);
@@ -123,17 +122,17 @@ class ChecksheetController extends Controller
         $id = decrypt($id);
         $itemHead = ChecksheetFormHead::where('id',$id)->first();
         $itemDetail = ChecksheetFormDetail::where('id_header',$id)->get();
-    
+
         return view('checksheet.detail',compact('itemHead','itemDetail'));
     }
 
     public function checksheetSignature(Request $request){
         // Decode the JSON signature data
         $signatures = json_decode($request->signature1);
-        
+
         // Extract the checksheet ID
         $checksheet_id = $request->checksheet_id;
-        
+
         // Create a new instance of the Signature model
         $signature = new Signature();
 
@@ -148,10 +147,10 @@ class ChecksheetController extends Controller
         $signature->save();
 
         return redirect()->back()->with('status', 'Success Sign Checksheet');
-        
+
         // Optionally, you can return a response or redirect the user
     }
 
-    
+
 
 }
