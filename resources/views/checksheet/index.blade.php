@@ -10,7 +10,7 @@
         </div>
     </header>
     <!-- Main page content-->
-    <div class="container-xl px-4 mt-n10">       
+    <div class="container-fluid px-4 mt-n10">
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
@@ -32,14 +32,14 @@
                                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                                         <strong>{{ session('status') }}</strong>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div> 
+                                    </div>
                                     @endif
 
                                     @if (session('failed'))
                                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                         <strong>{{ session('failed') }}</strong>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div> 
+                                    </div>
                                     @endif
 
                                     <!-- Validasi form -->
@@ -74,9 +74,9 @@
                                                 <div class="modal-footer">
                                                     <button id="submitBtn" type="submit" class="btn btn-primary">Submit</button>
                                                 </div>
-                                                
+
                                             </form>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -91,7 +91,7 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="mb-3 col-sm-12">
-                                            <div class="table-responsive"> 
+                                            <div class="table-responsive">
                                                 <table id="tableUser" class="table table-bordered table-striped">
                                                     <thead>
                                                         <tr>
@@ -115,17 +115,109 @@
                                                             <td>{{$data->department}} ({{$data->shop}})</td>
                                                             <td>{{$data->created_by}}</td>
                                                             <td>{{$data->manufacturing_date}}</td>
-                                                            <td>{{$data->status}}</td>
                                                             <td>
-                                                                <a href="checksheet/detail/{{ encrypt($data->id) }}" class="btn btn-primary btn-sm">
-                                                                    <i class="fas fa-info"></i></a>
-                                                                <button title="Signature Approval" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-signature{{ $data->id }}">
-                                                                    <i class="fas fa-file-signature"></i>
-                                                                </button>
-                                                                <button title="Delete Dropdown" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-delete{{ $data->id }}">
-                                                                    <i class="fas fa-trash-alt"></i>
-                                                                </button>   
+                                                                @if($data->status == 0)
+                                                                    <span class="badge bg-primary">On Check</span>
+                                                                @elseif($data->status == 1)
+                                                                    <span class="badge bg-warning">Waiting Approval</span>
+                                                                @elseif($data->status == 2)
+                                                                    <span class="badge bg-danger">Remand</span>
+                                                                @elseif($data->status == 3)
+                                                                    <span class="badge bg-success">Done</span>
+                                                                @else
+                                                                    <span class="badge bg-secondary">Unknown Status</span>
+                                                                @endif
                                                             </td>
+
+                                                            <td>
+                                                                <div class="btn-group">
+                                                                    <a href="checksheet/detail/{{ encrypt($data->id) }}" class="btn btn-primary btn-sm" title="Detail">
+                                                                        <i class="fas fa-info"></i>
+                                                                    </a>
+                                                                    <button title="Delete" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-delete{{ $data->id }}">
+                                                                        <i class="fas fa-trash-alt"></i>
+                                                                    </button>
+                                                                    @if($data->status == 1)
+                                                                        <a href="checksheet/approve/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Approve">
+                                                                            <i class="fas fa-check"></i>
+                                                                        </a>
+                                                                    @elseif($data->status == 0)
+                                                                        <a href="checksheet/fill/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Fill">
+                                                                            <i class="fas fa-pencil-alt"></i>
+                                                                        </a>
+                                                                        @elseif($data->status == 2)
+                                                                        <a href="checksheet/update/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Update">
+                                                                            <i class="fas fa-pencil-alt"></i>
+                                                                        </a>
+                                                                    @endif
+                                                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu">
+                                                                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#journeyModal{{ $data->id }}"><i class="fas fa-history me-1"></i>View Journey</a></li>
+                                                                        <!-- Tambahkan item dropdown lainnya di sini jika diperlukan -->
+                                                                    </ul>
+                                                                </div>
+                                                                  <!-- Modal -->
+                                                             <div class="modal fade" id="journeyModal{{ $data->id }}" tabindex="-1" aria-labelledby="journeyModalLabel{{ $data->id }}" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="journeyModalLabel{{ $data->id }}">Checksheet Journey</h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            @if ($data->logs->isEmpty())
+                                                                                <p>No journey logs available for this checksheet.</p>
+                                                                            @else
+                                                                                <div class="table-responsive">
+                                                                                    <table class="table table-bordered table-striped">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>No</th>
+                                                                                                <th>User</th>
+                                                                                                <th>Action</th>
+                                                                                                <th>Remark</th>
+                                                                                                <th>Date</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            @foreach ($data->logs as $log)
+                                                                                            <tr>
+                                                                                                <td>{{ $loop->iteration }}</td>
+                                                                                                <td>{{ $log->user->name }}</td>
+                                                                                                <td>
+                                                                                                    @if ($log->action == 0)
+                                                                                                        <span class="badge bg-primary">On Check</span>
+                                                                                                    @elseif ($log->action == 1)
+                                                                                                        <span class="badge bg-warning">Waiting Approval</span>
+                                                                                                    @elseif ($log->action == 2)
+                                                                                                        <span class="badge bg-danger">Remand</span>
+                                                                                                    @elseif ($log->action == 3)
+                                                                                                        <span class="badge bg-success">Done</span>
+                                                                                                    @else
+                                                                                                        <span class="badge bg-secondary">Unknown Status</span>
+                                                                                                    @endif
+                                                                                                </td>
+                                                                                                <td>{{ $log->remark }}</td>
+                                                                                                <td>{{ $log->created_at }}</td>
+                                                                                            </tr>
+                                                                                        @endforeach
+
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            </td>
+
+
                                                         </tr>
                                                         @endforeach
                                                     </tbody>
@@ -138,32 +230,32 @@
 
 
                             @foreach ($item as $data)
-    <!-- Modal -->
-    <div class="modal fade" id="modal-signature{{ $data->id }}" tabindex="-1" aria-labelledby="modal-signature-label" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modal-signature-label">{{$data->machine_name}} ({{$data->op_number}})</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="signatureForm{{ $data->id }}" action="{{ url('/checksheet/signature') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="checksheet_id" value="{{ $data->id }}">
-                        <!-- Hidden input fields for signature data -->
-                        @for ($i = 1; $i <= 4; $i++)
-                            <input type="hidden" id="signature{{ $i }}{{ $data->id }}" name="signature{{ $i }}" value="{{ $data->{"signature$i"} ?? '' }}">
-                        @endfor
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Approval</th>
-                                    <th colspan="2">Checked</th>
-                                    <th>Arranged</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
+                    <!-- Modal -->
+                    <div class="modal fade" id="modal-signature{{ $data->id }}" tabindex="-1" aria-labelledby="modal-signature-label" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modal-signature-label">{{$data->machine_name}} ({{$data->op_number}})</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="signatureForm{{ $data->id }}" action="{{ url('/checksheet/signature') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="checksheet_id" value="{{ $data->id }}">
+                                        <!-- Hidden input fields for signature data -->
+                                        @for ($i = 1; $i <= 4; $i++)
+                                            <input type="hidden" id="signature{{ $i }}{{ $data->id }}" name="signature{{ $i }}" value="{{ $data->{"signature$i"} ?? '' }}">
+                                        @endfor
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Approval</th>
+                                                    <th colspan="2">Checked</th>
+                                                    <th>Arranged</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
                                     <!-- Approval -->
                                     <td>
                                         <div class="border p-3 mb-3">
@@ -231,7 +323,7 @@
         </div>
     </div>
 @endforeach
-                            
+
 
 
                         <!-- /.col -->
@@ -342,8 +434,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
   $(document).ready(function() {
     var table = $("#tableUser").DataTable({
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     });

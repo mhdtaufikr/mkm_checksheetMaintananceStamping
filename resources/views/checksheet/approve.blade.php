@@ -24,8 +24,50 @@
 
                         <div class="col-12 mb-4">
                             <div class="card">
-                                <div class="card-header">
+                                <div class="card-header d-flex justify-content-between align-items-center">
                                     <h3 class="card-title">{{$itemHead->machine_name}}</h3>
+                                    @if($itemHead->status == 1)
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal">
+                                            Submit
+                                        </button>
+                                    @endif
+                                </div>
+                                <!-- Approve Modal -->
+                                <div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="approveModalLabel">Approve or Remand Checksheet</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ url('/checksheet/approve/store') }}" method="POST">
+                                                @csrf
+                                                <input type="text" name="id" value="{{$itemHead->id}}" hidden>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Select Action:</label>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="approvalStatus" id="approveRadio" value="approve" checked>
+                                                            <label class="form-check-label" for="approveRadio">Approve</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="approvalStatus" id="remandRadio" value="remand">
+                                                            <label class="form-check-label" for="remandRadio">Remand</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="remark" class="form-label">Remark:</label>
+                                                        <textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
 
                               <!-- /.card-header -->

@@ -54,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/user/update/{user}', [UserController::class, 'update'])->middleware(['checkRole:IT']);
     Route::get('/user/revoke/{user}', [UserController::class, 'revoke'])->middleware(['checkRole:IT']);
     Route::get('/user/access/{user}', [UserController::class, 'access'])->middleware(['checkRole:IT']);
-   
+
     //Master Mechine
     Route::get('/master/mechine', [MachineController::class, 'index'])->middleware(['checkRole:IT']);
     Route::post('/master/mechine/store', [MachineController::class, 'store'])->middleware(['checkRole:IT']);
@@ -74,5 +74,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checksheet/store/detail', [ChecksheetController::class, 'storeDetailForm'])->middleware(['checkRole:IT']);
     Route::get('/checksheet/detail/{id}', [ChecksheetController::class, 'checksheetDetail'])->middleware(['checkRole:IT']);
     Route::post('/checksheet/signature', [ChecksheetController::class, 'checksheetSignature'])->middleware(['checkRole:IT']);
+
+    Route::get('/checksheet/approve/{id}', [ChecksheetController::class, 'checksheetApprove'])->middleware(['checkRole:IT']);
+    Route::post('/checksheet/approve/store', [ChecksheetController::class, 'checksheetApproveStore'])->middleware(['checkRole:IT']);
+    Route::get('checksheet/update/{id}', [ChecksheetController::class, 'checksheetUpdate'])->middleware(['checkRole:IT']);
+
 
 });

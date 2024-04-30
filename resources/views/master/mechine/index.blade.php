@@ -3,7 +3,7 @@
 @section('content')
 <main>
     <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-        <div class="container-xl px-4">
+        <div class="container-fluid px-4">
             <div class="page-header-content pt-4">
                 {{-- <div class="row align-items-center justify-content-between">
                     <div class="col-auto mt-4">
@@ -19,7 +19,7 @@
         </div>
     </header>
 <!-- Main page content-->
-<div class="container-xl px-4 mt-n10">       
+<div class="container-fluid px-4 mt-n10">
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -42,15 +42,15 @@
               <div class="card-header">
                 <h3 class="card-title">List Machine</h3>
               </div>
-              
+
               <!-- /.card-header -->
               <div class="card-body">
                 <div class="row">
                     <div class="mb-3 col-sm-12">
                         <button type="button" class="btn btn-dark btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#modal-add">
-                            <i class="fas fa-plus-square"></i> 
+                            <i class="fas fa-plus-square"></i>
                           </button>
-                          
+
                           <!-- Modal -->
                           <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modal-add-label" aria-hidden="true">
                             <div class="modal-dialog">
@@ -62,9 +62,62 @@
                                 <form action="{{ url('/master/mechine/store') }}" method="POST">
                                   @csrf
                                   <div class="modal-body">
-                                    <div class="form-group">
-                                      <input type="text" class="form-control" id="mechine" name="mechine" placeholder="Enter Mechine Name" required>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Machine Name</label>
+                                                <input type="text" class="form-control" id="mechine" name="mechine" placeholder="Enter Mechine Name" required>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Checksheet Type</label>
+                                                <select name="type" id="type" class="form-control">
+                                                    <option value="">- Please Select Type -</option>
+                                                    @foreach ($dropdown as $type)
+                                                        <option value="{{ $type->name_value }}">{{ $type->name_value }}</option>
+                                                    @endforeach
+                                                  </select>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Document Number</label>
+                                                <input type="text" class="form-control" id="no_document" name="no_document" placeholder="Enter Document Number" required>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Effective Date</label>
+                                                <input type="date" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Document Number" required>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Revision</label>
+                                                <input type="text" class="form-control" id="revision" name="revision" placeholder="Enter Revision" >
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Procedure Number</label>
+                                                <input type="text" class="form-control" id="no_procedure" name="no_procedure" placeholder="Enter Procedure Number" >
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">OP. Name</label>
+                                                <input type="text" class="form-control" id="op_name" name="op_name" placeholder="Enter OP. Name" >
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Process</label>
+                                                <input type="text" class="form-control" id="process" name="process" placeholder="Enter Process" >
+                                              </div>
+                                        </div>
                                     </div>
+
                                   </div>
                                   <div class="modal-footer">
                                     <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
@@ -74,7 +127,7 @@
                               </div>
                             </div>
                           </div>
-                          
+
 
                     <div class="col-sm-12">
                       <!--alert success -->
@@ -82,16 +135,16 @@
                       <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <strong>{{ session('status') }}</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div> 
+                      </div>
                     @endif
 
                     @if (session('failed'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                       <strong>{{ session('failed') }}</strong>
                       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div> 
+                    </div>
                   @endif
-                    
+
                       <!--alert success -->
                       <!--validasi form-->
                         @if (count($errors)>0)
@@ -108,12 +161,16 @@
                       <!--end validasi form-->
                     </div>
                 </div>
-                <div class="table-responsive"> 
+                <div class="table-responsive">
                   <table id="tableUser" class="table table-bordered table-striped">
                     <thead>
                     <tr>
                       <th>No</th>
                       <th>Mechine Name</th>
+                      <th>Document Number</th>
+                      <th>Effective Date</th>
+                      <th>Procedure Number</th>
+                      <th>OP. Name</th>
                       <th>Action</th>
                     </tr>
                     </thead>
@@ -125,14 +182,18 @@
                       <tr>
                           <td>{{ $no++ }}</td>
                           <td>{{$data->machine_name}}</td>
+                          <td>{{$data->no_document}}</td>
+                          <td>{{ \Carbon\Carbon::parse($data->effective_date)->format('d-M-Y') }}</td>
+                          <td>{{$data->no_procedure}}</td>
+                          <td>{{$data->op_name}}</td>
                           <td>
                             <a href="mechine/detail/{{ encrypt($data->id) }}" class="btn btn-primary btn-sm">
                               <i class="fas fa-info"></i>
                           </a>
-                          
+
                               <button title="Delete Dropdown" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-delete{{ $data->id }}">
                                   <i class="fas fa-trash-alt"></i>
-                              </button>   
+                              </button>
                           </td>
                       </tr>
 
@@ -156,14 +217,14 @@
   <!-- /.content-wrapper -->
 </div>
 
-     
+
 </main>
 <!-- For Datatables -->
 <script>
     $(document).ready(function() {
       var table = $("#tableUser").DataTable({
-        "responsive": true, 
-        "lengthChange": false, 
+        "responsive": true,
+        "lengthChange": false,
         "autoWidth": false,
         // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
       });

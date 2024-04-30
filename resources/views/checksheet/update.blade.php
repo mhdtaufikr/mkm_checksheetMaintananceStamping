@@ -38,7 +38,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">No. Document</label>
-                                                        <input type="text" class="form-control" id="no_document" name="no_document" placeholder="Enter No. Document" value="{{$itemHead->no_document}}" readonly required>
+                                                        <input type="text" class="form-control" id="no_document" name="no_document" placeholder="Enter No. Document" value="{{$itemHead->document_number}}" readonly required>
                                                     </div>
                                                 </div>
                                                 @if($itemHead->type == 'Mechanic')
@@ -85,19 +85,19 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">OP No.</label>
-                                                        <input type="text" class="form-control" id="op_number" name="op_number" placeholder="Enter OP No." value="{{$itemHead->op_name}}" readonly required>
+                                                        <input type="text" class="form-control" id="op_number" name="op_number" placeholder="Enter OP No." value="{{$itemHead->op_number}}" readonly required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">Mfg Date</label>
-                                                        <input readonly value="{{$itemHead->manufacturing_date}}" type="date" class="form-control" id="mfg_date" name="mfg_date" placeholder="Enter MFG Date" required>
+                                                        <input  value="{{$itemHead->manufacturing_date}}" type="date" class="form-control" id="mfg_date" name="mfg_date" placeholder="Enter MFG Date" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">Planning Date</label>
-                                                        <input readonly value="{{$itemHead->planning_date}}" type="date" class="form-control" id="planning_date" name="planning_date" placeholder="Enter Planning Date" required>
+                                                        <input  value="{{$itemHead->planning_date}}" type="date" class="form-control" id="planning_date" name="planning_date" placeholder="Enter Planning Date" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
@@ -115,7 +115,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">Actual Date</label>
-                                                        <input readonly value="{{$itemHead->actual_date}}" type="date" class="form-control" id="actual_date" name="actual_date" placeholder="Enter Actual Date" required>
+                                                        <input  value="{{$itemHead->actual_date}}" type="date" class="form-control" id="actual_date" name="actual_date" placeholder="Enter Actual Date" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -157,41 +157,42 @@
                                                     @php
                                                         $checksheetType = $items[0]['checksheet_type'];
                                                     @endphp
-                                                        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ Str::slug($checksheetCategory) }}-content" role="tabpanel"
-                                                            aria-labelledby="{{ Str::slug($checksheetCategory) }}-tab">
-                                                            <br>
-                                                            <h1>{{ $checksheetType }}</h1> <!-- Display the asset category -->
-                                                            <table class="table table-bordered table-striped">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Description</th>
-                                                                        <th>Spec</th>
-                                                                        <th>Act</th>
-                                                                        <th>B</th>
-                                                                        <th>R</th>
-                                                                        <th>G</th>
-                                                                        <th>PP</th>
-                                                                        <th>Judge</th>
-                                                                        <th>Remarks</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($items as $item)
-                                                                        <tr>
-                                                                            <td>{{ $item->item_name }}</td>
-                                                                            <td>{{ $item->spec }}</td>
-                                                                            <td>{{ $item->act }}</td>
-                                                                            <td><input type="checkbox" {{ $item->B ? 'checked' : '' }} disabled></td>
-                                                                            <td><input type="checkbox" {{ $item->R ? 'checked' : '' }} disabled></td>
-                                                                            <td><input type="checkbox" {{ $item->G ? 'checked' : '' }} disabled></td>
-                                                                            <td><input type="checkbox" {{ $item->PP ? 'checked' : '' }} disabled></td>
-                                                                            <td>{{ $item->judge }}</td>
-                                                                            <td>{{ $item->remarks }}</td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
+                                                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ Str::slug($checksheetCategory) }}-content" role="tabpanel"
+                                                        aria-labelledby="{{ Str::slug($checksheetCategory) }}-tab">
+                                                        <br>
+                                                        <h1>{{ $checksheetType }}</h1> <!-- Display the asset category -->
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Description</th>
+                                                                    <th>Spec</th>
+                                                                    <th>Act</th>
+                                                                    <th>B</th>
+                                                                    <th>R</th>
+                                                                    <th>G</th>
+                                                                    <th>PP</th>
+                                                                    <th>Judge</th>
+                                                                    <th>Remarks</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($items as $item)
+                                                                <tr>
+                                                                    <td>{{ $item->item_name }}</td>
+                                                                    <td>{{ $item->spec }}</td>
+                                                                    <td><input type="text" name="items[{{ $item->item_name }}][act]" value="{{ $item->act }}"></td>
+                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][B]" value="1" {{ $item->B ? 'checked' : '' }}></td>
+                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][R]" value="1" {{ $item->R ? 'checked' : '' }}></td>
+                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][G]" value="1" {{ $item->G ? 'checked' : '' }}></td>
+                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][PP]" value="1" {{ $item->PP ? 'checked' : '' }}></td>
+                                                                    <td><input type="text" name="items[{{ $item->item_name }}][judge]" value="{{ $item->judge }}"></td>
+                                                                    <td><input type="text" name="items[{{ $item->item_name }}][remarks]" value="{{ $item->remarks }}"></td>
+                                                                </tr>
+                                                            @endforeach
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -213,4 +214,23 @@
         <!-- /.content-wrapper -->
     </div>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    // Uncheck other checkboxes in the same row
+                    const row = this.parentElement.parentElement;
+                    const otherCheckboxes = row.querySelectorAll('.checkbox');
+                    otherCheckboxes.forEach(otherCheckbox => {
+                        if (otherCheckbox !== this) {
+                            otherCheckbox.checked = false;
+                        }
+                    });
+                }
+            });
+        });
+    });
+    </script>
 @endsection
