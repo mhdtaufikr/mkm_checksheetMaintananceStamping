@@ -12,19 +12,23 @@ use App\Models\ChecksheetFormDetail;
 use App\Models\Signature;
 use Illuminate\Support\Str;
 use App\Models\ChecksheetJourneyLog;
+use DB;
 
 class ChecksheetController extends Controller
 {
     public function index()
-{
-    $item = ChecksheetFormHead::all();
+    {
+        // Retrieve all ChecksheetFormHead records sorted by the newest data
+        $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
 
-    foreach ($item as $items) {
-        $items->logs = ChecksheetJourneyLog::where('checksheet_id', $items->id)->get();
+        // Attach logs to each item
+        foreach ($item as $items) {
+            $items->logs = ChecksheetJourneyLog::where('checksheet_id', $items->id)->orderBy('created_at', 'desc')->get();
+        }
+
+        return view('checksheet.index', compact('item'));
     }
 
-    return view('checksheet.index', compact('item'));
-}
 
 
     public function checksheetScan(Request $request){
@@ -213,7 +217,7 @@ class ChecksheetController extends Controller
         // Update the status in the checksheet header
         switch ($request->approvalStatus) {
             case 'approve':
-                $checksheetHeader->status = 1; // Waiting Approval
+                $checksheetHeader->status = 3; // Waiting Approval
                 break;
             case 'remand':
                 $checksheetHeader->status = 2; // Remand
@@ -255,5 +259,62 @@ class ChecksheetController extends Controller
 
         return view('checksheet.update', compact('itemHead', 'groupedResults', 'id'));
     }
+
+    public function checksheetUpdateDetail(Request $request){
+        // Retrieve request data
+        $requestData = $request->all();
+        $id = $requestData['id'];
+        $noDocument = $requestData['no_document'];
+
+        // Update values in the checksheet_form_details table
+        foreach ($requestData['items'] as $itemName => $itemData) {
+            $detail = ChecksheetFormDetail::where('id_header', $id)
+                ->where('item_name', $itemName)
+                ->first();
+            if ($detail) {
+                $detail->update($itemData);
+            }
+        }
+
+        // Check for changes in checksheet_form_details
+        $detailsBeforeUpdate = ChecksheetFormDetail::where('id_header', $id)
+            ->pluck('id', 'item_name');
+
+        // Log changes in checksheet_journey_logs
+        foreach ($requestData['items'] as $itemName => $itemData) {
+            $detailId = $detailsBeforeUpdate[$itemName] ?? null;
+            if ($detailId) {
+                $logData = [
+                    'checksheet_id' => $detailId,
+                    'user_id' => auth()->id(),
+                    'action' => 'Update',
+                    'remark' => 'Checksheet detail updated',
+                ];
+                ChecksheetJourneyLog::create($logData);
+            }
+        }
+
+        // Update values in the checksheet_form_heads table if necessary
+        $head = ChecksheetFormHead::find($id);
+        if ($head) {
+            $head->update($requestData);
+
+            // Log changes in checksheet_journey_logs for checksheet_form_heads
+            $logData = [
+                'checksheet_id' => $id,
+                'user_id' => auth()->id(),
+                'action' => '5',
+                'remark' => 'Checksheet updated',
+            ];
+            ChecksheetJourneyLog::create($logData);
+
+            // Update checksheet status to 1 (done)
+            $head->update(['status' => 1]);
+        }
+
+        // Redirect to /checksheet
+        return redirect('/checksheet')->with('status', 'Checksheet updated successfully');
+    }
+
 
 }

@@ -195,6 +195,8 @@
                                                                                                         <span class="badge bg-danger">Remand</span>
                                                                                                     @elseif ($log->action == 3)
                                                                                                         <span class="badge bg-success">Done</span>
+                                                                                                    @elseif ($log->action == 5)
+                                                                                                        <span class="badge bg-info">Update</span>
                                                                                                     @else
                                                                                                         <span class="badge bg-secondary">Unknown Status</span>
                                                                                                     @endif

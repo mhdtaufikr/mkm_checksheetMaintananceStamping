@@ -21,11 +21,12 @@
             <section class="content">
                 <div class="container-fluid">
                     <div class="row">
-
+                        <form action="{{ url('/checksheet/update/detail') }}" method="POST">
                         <div class="col-12 mb-4">
                             <div class="card">
-                                <div class="card-header">
+                                <div class="card-header d-flex justify-content-between align-items-center">
                                     <h3 class="card-title">{{$itemHead->machine_name}}</h3>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
 
                               <!-- /.card-header -->
@@ -132,10 +133,11 @@
 
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">{{ $itemHead->machine_name }}</h3>
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title">{{$itemHead->machine_name}}</h3>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
-
+                                <input type="text" name="id" value="{{$id}}" hidden>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="mb-3 col-sm-12">
@@ -205,6 +207,7 @@
                         </div>
                         <!-- /.col -->
                     </div>
+                </form>
                     <!-- /.row -->
                 </div>
                 <!-- /.container-fluid -->
