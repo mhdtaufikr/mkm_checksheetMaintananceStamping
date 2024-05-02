@@ -16,18 +16,23 @@ use DB;
 
 class ChecksheetController extends Controller
 {
-    public function index()
-    {
-        // Retrieve all ChecksheetFormHead records sorted by the newest data
-        $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
+    public function index(Request $request)
+{
+    // Retrieve all ChecksheetFormHead records sorted by the newest data
+    $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
 
-        // Attach logs to each item
-        foreach ($item as $items) {
-            $items->logs = ChecksheetJourneyLog::where('checksheet_id', $items->id)->orderBy('created_at', 'desc')->get();
-        }
-
-        return view('checksheet.index', compact('item'));
+    // Attach logs to each item
+    foreach ($item as $items) {
+        $items->logs = ChecksheetJourneyLog::where('checksheet_id', $items->id)
+            ->orderBy('created_at', 'desc')->get();
     }
+
+    // Retrieve all machine names
+    $machines = Machine::pluck('machine_name')->toArray();
+
+    return view('checksheet.index', compact('item', 'machines'));
+}
+
 
 
 

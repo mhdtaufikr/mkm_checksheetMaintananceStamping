@@ -64,7 +64,9 @@
                                                 @csrf
                                                 <div class="modal-body">
                                                     <div class="form-group mb-4">
-                                                        <input type="text" class="form-control" id="mechine" name="mechine" placeholder="Enter Mechine Name" required>
+                                                        <select id="machineSelect" class="form-control chosen-select" data-placeholder="Choose a machine...">
+                                                            <!-- Options will be populated dynamically using PHP -->
+                                                        </select>
                                                     </div>
                                                     <div class="d-flex justify-content-center">
                                                         <div id="qr-reader" style="width:500px"></div>
@@ -81,7 +83,27 @@
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
-                            </div>
+                            </div><script>
+                                // Populate options dynamically from PHP variable
+                                var machines = <?php echo json_encode($machines); ?>;
+
+                                // Function to populate select options
+                                function populateOptions() {
+                                    var select = $('#machineSelect');
+                                    select.empty();
+                                    select.append('<option></option>'); // Add an empty option
+                                    machines.forEach(function(machine) {
+                                        select.append('<option value="' + machine + '">' + machine + '</option>');
+                                    });
+                                    // Initialize Chosen plugin
+                                    select.chosen();
+                                }
+
+                                // Call the function to populate options on page load
+                                $(document).ready(function() {
+                                    populateOptions();
+                                });
+                            </script>
                             <!-- /.card -->
 
                             <div class="card mt-4">
