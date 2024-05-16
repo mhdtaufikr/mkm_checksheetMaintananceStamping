@@ -10,8 +10,14 @@ use App\Models\ChecksheetItem;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ChecksheetFormDetail;
 use App\Models\Signature;
+use App\Models\Rule;
+use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\ChecksheetJourneyLog;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ApprovalReminder;
+use App\Mail\RemandNotification;
+
 use DB;
 
 class ChecksheetController extends Controller
@@ -114,6 +120,8 @@ class ChecksheetController extends Controller
         // Mendapatkan item-item yang akan disimpan
         $items = $formData['items'];
 
+        $getMail = Rule::where('rule_name','Approval')->get();
+
         // Menyimpan setiap item ke dalam tabel
         foreach ($items as $itemName => $itemData) {
             $checksheetDetail = new ChecksheetFormDetail();
@@ -138,6 +146,12 @@ class ChecksheetController extends Controller
             $checksheetHead->save();
         }
 
+        foreach ($getMail as $mail) {
+            if ($checksheetHead && $checksheetHead->status == 1) {
+
+                Mail::to($mail->rule_value)->send(new ApprovalReminder($checksheetHead));
+            }
+        }
 
         // Redirect atau response sesuai kebutuhan Anda
         return redirect()->route('machine')->with('status', 'Checksheet submitted successfully.');
@@ -214,34 +228,31 @@ class ChecksheetController extends Controller
 
     public function checksheetApproveStore(Request $request)
     {
-        // Validate the request data if needed
-
-        // Retrieve the checksheet header based on the provided ID
         $checksheetHeader = ChecksheetFormHead::findOrFail($request->id);
 
-        // Update the status in the checksheet header
+        $getMail = User::where('name',$checksheetHeader->created_by)->first();
+
         switch ($request->approvalStatus) {
             case 'approve':
                 $checksheetHeader->status = 3; // Waiting Approval
                 break;
             case 'remand':
                 $checksheetHeader->status = 2; // Remand
+                Mail::to($getMail->email) // Replace with appropriate recipient
+                    ->send(new RemandNotification($checksheetHeader, $request->remark));
                 break;
             default:
-                // Handle invalid status here, or set a default action
                 break;
         }
         $checksheetHeader->save();
 
-        // Record the status change in the journey logs
         $log = new ChecksheetJourneyLog();
         $log->checksheet_id = $request->id;
-        $log->user_id = Auth::id(); // Assuming you have authentication set up
+        $log->user_id = Auth::id();
         $log->action = $checksheetHeader->status;
         $log->remark = $request->remark;
         $log->save();
 
-        // Redirect with a success message
         return redirect()->route('machine')->with('status', 'Checksheet submitted successfully.');
     }
 
@@ -284,20 +295,6 @@ class ChecksheetController extends Controller
         // Check for changes in checksheet_form_details
         $detailsBeforeUpdate = ChecksheetFormDetail::where('id_header', $id)
             ->pluck('id', 'item_name');
-
-        // Log changes in checksheet_journey_logs
-        foreach ($requestData['items'] as $itemName => $itemData) {
-            $detailId = $detailsBeforeUpdate[$itemName] ?? null;
-            if ($detailId) {
-                $logData = [
-                    'checksheet_id' => $detailId,
-                    'user_id' => auth()->id(),
-                    'action' => 'Update',
-                    'remark' => 'Checksheet detail updated',
-                ];
-                ChecksheetJourneyLog::create($logData);
-            }
-        }
 
         // Update values in the checksheet_form_heads table if necessary
         $head = ChecksheetFormHead::find($id);

@@ -64,7 +64,7 @@
                                                 @csrf
                                                 <div class="modal-body">
                                                     <div class="form-group mb-4">
-                                                        <select id="machineSelect" class="form-control chosen-select" data-placeholder="Choose a machine...">
+                                                        <select name="mechine" id="machineSelect" class="form-control chosen-select" data-placeholder="Choose a machine...">
                                                             <!-- Options will be populated dynamically using PHP -->
                                                         </select>
                                                     </div>
@@ -72,8 +72,11 @@
                                                         <div id="qr-reader" style="width:500px"></div>
                                                         <div id="qr-reader-results"></div>
                                                     </div>
+                                                    <div class="d-flex justify-content-center mt-3">
+                                                        <input readonly type="text" name="mechine" id="qr-value" class="form-control" placeholder="Scanned QR Code Value">
+                                                    </div>
                                                 </div>
-                                                <div class="modal-footer">
+                                                <div class="modal-footer d-flex justify-content-center">
                                                     <button id="submitBtn" type="submit" class="btn btn-primary">Submit</button>
                                                 </div>
 
@@ -83,27 +86,8 @@
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
-                            </div><script>
-                                // Populate options dynamically from PHP variable
-                                var machines = <?php echo json_encode($machines); ?>;
+                            </div>
 
-                                // Function to populate select options
-                                function populateOptions() {
-                                    var select = $('#machineSelect');
-                                    select.empty();
-                                    select.append('<option></option>'); // Add an empty option
-                                    machines.forEach(function(machine) {
-                                        select.append('<option value="' + machine + '">' + machine + '</option>');
-                                    });
-                                    // Initialize Chosen plugin
-                                    select.chosen();
-                                }
-
-                                // Call the function to populate options on page load
-                                $(document).ready(function() {
-                                    populateOptions();
-                                });
-                            </script>
                             <!-- /.card -->
 
                             <div class="card mt-4">
@@ -240,8 +224,6 @@
                                                                 </div>
                                                             </div>
                                                             </td>
-
-
                                                         </tr>
                                                         @endforeach
                                                     </tbody>
@@ -251,105 +233,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
-                            @foreach ($item as $data)
-                    <!-- Modal -->
-                    <div class="modal fade" id="modal-signature{{ $data->id }}" tabindex="-1" aria-labelledby="modal-signature-label" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modal-signature-label">{{$data->machine_name}} ({{$data->op_number}})</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="signatureForm{{ $data->id }}" action="{{ url('/checksheet/signature') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="checksheet_id" value="{{ $data->id }}">
-                                        <!-- Hidden input fields for signature data -->
-                                        @for ($i = 1; $i <= 4; $i++)
-                                            <input type="hidden" id="signature{{ $i }}{{ $data->id }}" name="signature{{ $i }}" value="{{ $data->{"signature$i"} ?? '' }}">
-                                        @endfor
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>Approval</th>
-                                                    <th colspan="2">Checked</th>
-                                                    <th>Arranged</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                    <!-- Approval -->
-                                    <td>
-                                        <div class="border p-3 mb-3">
-                                            <h5 class="text-center mb-3">Approval</h5>
-                                            <div class="mb-3">
-                                                <label for="signature1" class="form-label">Approved by Person 1:</label>
-                                                <div id="signature-pad-1{{ $data->id }}" class="signature-pad">
-                                                    @if ($data->signature1)
-                                                        <img style="width: 150px; height: 100px;" src="{{ $data->signature1 }}" alt="Signature">
-                                                    @else
-                                                        <canvas style="width: 150px; height: 100px;"></canvas>
-                                                        <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <!-- Checked -->
-                                    <td colspan="2">
-                                        <div class="border p-3 mb-3">
-                                            <h5 class="text-center mb-3">Checked</h5>
-                                            <div class="row">
-                                                @for ($j = 2; $j <= 3; $j++)
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label for="signature{{ $j }}" class="form-label">Checked by Person {{ $j }}:</label>
-                                                            <div id="signature-pad-{{ $j }}{{ $data->id }}" class="signature-pad">
-                                                                @if ($data->{"signature$j"})
-                                                                    <img style="width: 150px; height: 100px;" src="{{ $data->{"signature$j"} }}" alt="Signature">
-                                                                @else
-                                                                    <canvas style="width: 150px; height: 100px;"></canvas>
-                                                                    <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endfor
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <!-- Arranged -->
-                                    <td>
-                                        <div class="border p-3 mb-3">
-                                            <h5 class="text-center mb-3">Arranged</h5>
-                                            <div class="mb-3">
-                                                <label for="signature4" class="form-label">Arranged by Person 4:</label>
-                                                <div id="signature-pad-4{{ $data->id }}" class="signature-pad">
-                                                    @if ($data->signature4)
-                                                        <img style="width: 150px; height: 100px;" src="{{ $data->signature4 }}" alt="Signature">
-                                                    @else
-                                                        <canvas style="width: 150px; height: 100px;"></canvas>
-                                                        <button type="button" class="btn btn-danger btn-sm clear-btn">Clear</button>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="submit" class="btn btn-primary submit-btn">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-@endforeach
-
-
-
                         <!-- /.col -->
                     </div>
                     <!-- /.row -->
@@ -362,64 +245,6 @@
     </div>
 </main>
 
-<!-- Include Signature Pad library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Pastikan untuk menginisialisasi SignaturePad setelah dokumen HTML dimuat sepenuhnya
-
-    @foreach ($item as $data)
-    var signaturePads{{ $data->id }} = [];
-
-    // Initialize Signature Pads for Persons
-    for (var i = 1; i <= 4; i++) {
-        var canvas{{ $data->id }} = document.querySelector(`#signature-pad-${i}{{ $data->id }} canvas`);
-        var signaturePad{{ $data->id }};
-
-        // Pastikan canvas ditemukan sebelum menginisialisasi SignaturePad
-        if (canvas{{ $data->id }}) {
-            signaturePad{{ $data->id }} = new SignaturePad(canvas{{ $data->id }});
-            var clearButton{{ $data->id }} = document.querySelector(`#signature-pad-${i}{{ $data->id }} .clear-btn`);
-
-            signaturePads{{ $data->id }}.push({
-                pad: signaturePad{{ $data->id }},
-                clearButton: clearButton{{ $data->id }}
-            });
-
-            clearButton{{ $data->id }}.addEventListener('click', function (index) {
-                return function () {
-                    signaturePads{{ $data->id }}[index].pad.clear();
-                };
-            }(i - 1));
-        }
-    }
-
-    // Capture and store signatures when form is submitted
-    var form{{ $data->id }} = document.querySelector('#signatureForm{{ $data->id }}');
-    if (form{{ $data->id }}) {
-        form{{ $data->id }}.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent the form from submitting normally
-
-            // Convert signatures to JSON
-            var signatureData{{ $data->id }} = {
-                "signature1": signaturePads{{ $data->id }}[0].pad.isEmpty() ? null : signaturePads{{ $data->id }}[0].pad.toDataURL(),
-                "signature2": signaturePads{{ $data->id }}[1].pad.isEmpty() ? null : signaturePads{{ $data->id }}[1].pad.toDataURL(),
-                "signature3": signaturePads{{ $data->id }}[2].pad.isEmpty() ? null : signaturePads{{ $data->id }}[2].pad.toDataURL(),
-                "signature4": signaturePads{{ $data->id }}[3].pad.isEmpty() ? null : signaturePads{{ $data->id }}[3].pad.toDataURL()
-            };
-
-            // Set the signature values to the hidden inputs
-            document.querySelector('#signature1{{ $data->id }}').value = JSON.stringify(signatureData{{ $data->id }});
-
-            // Submit the form
-            form{{ $data->id }}.submit();
-        });
-    }
-    @endforeach
-});
-
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <script>
     function docReady(fn) {
@@ -432,16 +257,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     docReady(function () {
         var resultContainer = document.getElementById('qr-reader-results');
+        var inputField = document.getElementById('qr-value');
         var lastResult, countResults = 0;
 
         function onScanSuccess(decodedText, decodedResult) {
             if (decodedText !== lastResult) {
-                ++countResults;
+                console.log(`Decoded text: ${decodedText}`);
                 lastResult = decodedText;
-                // Set the scanned value to the input field
-                document.getElementById('mechine').value = decodedText;
-                // Automatically submit the form
-                document.getElementById('submitBtn').click();
+                inputField.value = decodedText;
             }
         }
 
@@ -450,10 +273,6 @@ document.addEventListener('DOMContentLoaded', function () {
         html5QrcodeScanner.render(onScanSuccess);
     });
 </script>
-
-
-
-
 
 <script>
   $(document).ready(function() {
@@ -465,5 +284,27 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 </script>
+<script>
+    // Populate options dynamically from PHP variable
+    var machines = <?php echo json_encode($machines); ?>;
+
+    // Function to populate select options
+    function populateOptions() {
+        var select = $('#machineSelect');
+        select.empty();
+        select.append('<option></option>'); // Add an empty option
+        machines.forEach(function(machine) {
+            select.append('<option value="' + machine + '">' + machine + '</option>');
+        });
+        // Initialize Chosen plugin
+        select.chosen();
+    }
+
+    // Call the function to populate options on page load
+    $(document).ready(function() {
+        populateOptions();
+    });
+</script>
+
 
 @endsection
