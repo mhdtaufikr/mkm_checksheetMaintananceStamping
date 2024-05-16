@@ -65,6 +65,12 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
+                                                <label for="">Machine Number</label>
+                                                <input type="text" class="form-control" id="mechine" name="mechine_no" placeholder="Enter Mechine Name" required>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
                                                 <label for="">Machine Name</label>
                                                 <input type="text" class="form-control" id="mechine" name="mechine" placeholder="Enter Mechine Name" required>
                                               </div>
@@ -90,6 +96,12 @@
                                             <div class="form-group">
                                                 <label for="">Effective Date</label>
                                                 <input type="date" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Document Number" required>
+                                              </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Mfg Date</label>
+                                                <input type="date" class="form-control" id="mfg_date" name="mfg_date" placeholder="Enter Document Number" required>
                                               </div>
                                         </div>
                                         <div class="col-md-6">
@@ -166,7 +178,8 @@
                     <thead>
                     <tr>
                       <th>No</th>
-                      <th>Mechine Name</th>
+                      <th>Machine No.</th>
+                      <th>Machine Name</th>
                       <th>Document Number</th>
                       <th>Effective Date</th>
                       <th>Procedure Number</th>
@@ -181,6 +194,7 @@
                       @foreach ($item as $data)
                       <tr>
                           <td>{{ $no++ }}</td>
+                          <td>{{$data->machine_no}}</td>
                           <td>{{$data->machine_name}}</td>
                           <td>{{$data->no_document}}</td>
                           <td>{{ \Carbon\Carbon::parse($data->effective_date)->format('d-M-Y') }}</td>

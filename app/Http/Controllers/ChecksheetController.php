@@ -43,7 +43,14 @@ class ChecksheetController extends Controller
 
 
     public function checksheetScan(Request $request){
-        $item = Machine::where('machine_name',$request->mechine)->first();
+
+        if (empty($request->mechine)) {
+
+            $item = Machine::where('machine_no',$request->no_mechine)->first();
+
+        }else {
+            $item = Machine::where('machine_name',$request->mechine)->first();
+        }
 
         return view('checksheet.form',compact('item'));
     }

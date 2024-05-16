@@ -122,7 +122,7 @@
                                 <div class="col-md-4 mb-2">
                                     <div class="form-group">
                                         <label for="">Mfg Date</label>
-                                        <input type="date" class="form-control" id="mfg_date" name="mfg_date" placeholder="Enter MFG Date" required>
+                                        <input value="{{$item->mfg_date}}" type="date" class="form-control" id="mfg_date" name="mfg_date" placeholder="Enter MFG Date" readonly required>
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-2">

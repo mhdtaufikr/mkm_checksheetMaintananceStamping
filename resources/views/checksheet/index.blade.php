@@ -73,7 +73,7 @@
                                                         <div id="qr-reader-results"></div>
                                                     </div>
                                                     <div class="d-flex justify-content-center mt-3">
-                                                        <input readonly type="text" name="mechine" id="qr-value" class="form-control" placeholder="Scanned QR Code Value">
+                                                        <input readonly type="text" name="no_mechine" id="qr-value" class="form-control" placeholder="Scanned QR Code Value">
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer d-flex justify-content-center">

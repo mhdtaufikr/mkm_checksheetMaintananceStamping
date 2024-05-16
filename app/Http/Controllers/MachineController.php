@@ -38,10 +38,12 @@ class MachineController extends Controller
 
     // Store the machine data in the database
     $machine = new Machine();
+    $machine->machine_no = $request->mechine_no;
     $machine->machine_name = $request->mechine;
     $machine->type = $request->type;
     $machine->no_document = $request->no_document;
     $machine->effective_date = $request->effective_date;
+    $machine->mfg_date = $request->mfg_date;
     $machine->revision = $request->revision;
     $machine->no_procedure = $request->no_procedure;
     $machine->op_name = $request->op_name;
