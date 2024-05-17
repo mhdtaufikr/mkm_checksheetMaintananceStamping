@@ -77,10 +77,6 @@ class MachineController extends Controller
         // Check if a checksheet with the specified machine name already exists
         $existingChecksheet = CheckSheet::where('checksheet_category', $request->mechine)->first();
 
-        if ($existingChecksheet) {
-            // Handle the case where the checksheet already exists
-            return redirect()->back()->with('failed', 'Checksheet with category "'.$request->mechine.'" already exists.');
-        }
 
         // Create a new checksheet master record
         $checksheet = new CheckSheet();

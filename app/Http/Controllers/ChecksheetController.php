@@ -24,8 +24,12 @@ class ChecksheetController extends Controller
 {
     public function index(Request $request)
 {
+    if (Auth::user()->role == "Checker") {
+        $item = ChecksheetFormHead::where('created_by',Auth::user()->name)->orderBy('created_at', 'desc')->get();
+    }else {
+        $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
+    }
     // Retrieve all ChecksheetFormHead records sorted by the newest data
-    $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
 
     // Attach logs to each item
     foreach ($item as $items) {

@@ -13,6 +13,7 @@
                     <div class="nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
                     Checksheet
                 </a>
+                @if(\Auth::user()->role === 'Super Admin' || \Auth::user()->role === 'IT')
                  <!-- Sidenav Menu Heading (Master)-->
                  <div class="sidenav-menu-heading">Master</div>
                  <!-- Sidenav Accordion (Master)-->
@@ -26,6 +27,7 @@
                         <a class="nav-link" href="{{url('/master/mechine')}}">Mechine Checksheet</a>
                      </nav>
                  </div>
+                 @endif
                 @if(\Auth::user()->role === 'IT')
                 <!-- Sidenav Menu Heading (Core)-->
                 <div class="sidenav-menu-heading">Configuration</div>

@@ -56,28 +56,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user/access/{user}', [UserController::class, 'access'])->middleware(['checkRole:IT']);
 
     //Master Mechine
-    Route::get('/master/mechine', [MachineController::class, 'index'])->middleware(['checkRole:IT']);
-    Route::post('/master/mechine/store', [MachineController::class, 'store'])->middleware(['checkRole:IT']);
-    Route::get('/master/mechine/detail/{id}', [MachineController::class, 'detail'])->name('machine.detail')->middleware(['checkRole:IT']);
-    Route::post('/master/checksheet/type/store', [MachineController::class, 'storeChecksheet'])->middleware(['checkRole:IT']);
-    Route::post('/master/checksheet/item/store', [MachineController::class, 'storeItemChecksheet'])->middleware(['checkRole:IT']);
-    Route::delete('/master/delete/checksheet/{id}', [MachineController::class, 'deleteChecksheet'])->middleware(['checkRole:IT']);
-    Route::delete('/master/delete/checksheet/item/{id}', [MachineController::class, 'deleteChecksheetItem'])->middleware(['checkRole:IT']);
-    Route::patch('/master/checksheet/update/{id}', [MachineController::class, 'updateChecksheet'])->middleware(['checkRole:IT']);
-    Route::patch('/master/checksheet/item/update/{id}', [MachineController::class, 'updateChecksheetItem'])->middleware(['checkRole:IT']);
+    Route::get('/master/mechine', [MachineController::class, 'index'])->middleware(['checkRole:IT,Super Admin']);
+    Route::post('/master/mechine/store', [MachineController::class, 'store'])->middleware(['checkRole:IT,Super Admin']);
+    Route::get('/master/mechine/detail/{id}', [MachineController::class, 'detail'])->name('machine.detail')->middleware(['checkRole:IT,Super Admin']);
+    Route::post('/master/checksheet/type/store', [MachineController::class, 'storeChecksheet'])->middleware(['checkRole:IT,Super Admin']);
+    Route::post('/master/checksheet/item/store', [MachineController::class, 'storeItemChecksheet'])->middleware(['checkRole:IT,Super Admin']);
+    Route::delete('/master/delete/checksheet/{id}', [MachineController::class, 'deleteChecksheet'])->middleware(['checkRole:IT,Super Admin']);
+    Route::delete('/master/delete/checksheet/item/{id}', [MachineController::class, 'deleteChecksheetItem'])->middleware(['checkRole:IT,Super Admin']);
+    Route::patch('/master/checksheet/update/{id}', [MachineController::class, 'updateChecksheet'])->middleware(['checkRole:IT,Super Admin']);
+    Route::patch('/master/checksheet/item/update/{id}', [MachineController::class, 'updateChecksheetItem'])->middleware(['checkRole:IT,Super Admin']);
 
     //Master Checksheet form/checksheet/scan
-    Route::get('/checksheet', [ChecksheetController::class, 'index'])->middleware(['checkRole:IT'])->name('machine');
-    Route::post('/checksheet/scan', [ChecksheetController::class, 'checksheetScan'])->middleware(['checkRole:IT']);
-    Route::post('/checksheet/store', [ChecksheetController::class, 'storeHeadForm'])->middleware(['checkRole:IT']);
-    Route::get('/checksheet/fill/{id}', [ChecksheetController::class, 'checksheetfill'])->middleware(['checkRole:IT'])->name('fill');
-    Route::post('/checksheet/store/detail', [ChecksheetController::class, 'storeDetailForm'])->middleware(['checkRole:IT']);
-    Route::get('/checksheet/detail/{id}', [ChecksheetController::class, 'checksheetDetail'])->middleware(['checkRole:IT']);
-    Route::post('/checksheet/signature', [ChecksheetController::class, 'checksheetSignature'])->middleware(['checkRole:IT']);
+    Route::get('/checksheet', [ChecksheetController::class, 'index'])->middleware(['checkRole:IT,Super Admin,Approval,Checker'])->name('machine');
+    Route::post('/checksheet/scan', [ChecksheetController::class, 'checksheetScan'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
+    Route::post('/checksheet/store', [ChecksheetController::class, 'storeHeadForm'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
+    Route::get('/checksheet/fill/{id}', [ChecksheetController::class, 'checksheetfill'])->middleware(['checkRole:IT,Super Admin,Approval,Checker'])->name('fill');
+    Route::post('/checksheet/store/detail', [ChecksheetController::class, 'storeDetailForm'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
+    Route::get('/checksheet/detail/{id}', [ChecksheetController::class, 'checksheetDetail'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
+    Route::post('/checksheet/signature', [ChecksheetController::class, 'checksheetSignature'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
 
-    Route::get('/checksheet/approve/{id}', [ChecksheetController::class, 'checksheetApprove'])->middleware(['checkRole:IT']);
-    Route::post('/checksheet/approve/store', [ChecksheetController::class, 'checksheetApproveStore'])->middleware(['checkRole:IT']);
-    Route::get('checksheet/update/{id}', [ChecksheetController::class, 'checksheetUpdate'])->middleware(['checkRole:IT']);
-    Route::post('/checksheet/update/detail', [ChecksheetController::class, 'checksheetUpdateDetail'])->middleware(['checkRole:IT']);
+    Route::get('/checksheet/approve/{id}', [ChecksheetController::class, 'checksheetApprove'])->middleware(['checkRole:IT,Super Admin,Approval']);
+    Route::post('/checksheet/approve/store', [ChecksheetController::class, 'checksheetApproveStore'])->middleware(['checkRole:IT,Super Admin,Approval']);
+    Route::get('checksheet/update/{id}', [ChecksheetController::class, 'checksheetUpdate'])->middleware(['checkRole:IT,Super Admin,Approval']);
+    Route::post('/checksheet/update/detail', [ChecksheetController::class, 'checksheetUpdateDetail'])->middleware(['checkRole:IT,Super Admin,Approval']);
 
 });
