@@ -80,4 +80,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('checksheet/update/{id}', [ChecksheetController::class, 'checksheetUpdate'])->middleware(['checkRole:IT,Super Admin,Approval']);
     Route::post('/checksheet/update/detail', [ChecksheetController::class, 'checksheetUpdateDetail'])->middleware(['checkRole:IT,Super Admin,Approval']);
 
+    Route::get('/checksheet/checkher/{id}', [ChecksheetController::class, 'checksheetChecker'])->middleware(['checkRole:IT,Super Admin,Approval']);
+    Route::post('/checksheet/checker/store', [ChecksheetController::class, 'checksheetCheckerStore'])->middleware(['checkRole:IT,Super Admin,Approval']);
+
+    Route::get('checksheet/generate-pdf/{id}', [ChecksheetController::class, 'generatePdf'])->middleware(['checkRole:IT,Super Admin,Approval']);
+
 });

@@ -10,6 +10,6 @@
 
     <p>To review and approve the checksheet, please click on the link below:</p>
 
-    <strong><a href="{{ url('/checksheet/update/'.encrypt($checksheet->id)) }}">Approve Checksheet</a></strong>
+    <strong><a href="{{ url('/checksheet/update/'.encrypt($checksheet->id)) }}">Update Checksheet</a></strong>
 </body>
 </html>

@@ -123,17 +123,20 @@
                                                             <td>{{$data->manufacturing_date}}</td>
                                                             <td>
                                                                 @if($data->status == 0)
-                                                                    <span class="badge bg-primary">On Check</span>
+                                                                    <span class="badge bg-primary">Update</span>
                                                                 @elseif($data->status == 1)
-                                                                    <span class="badge bg-warning">Waiting Approval</span>
+                                                                    <span class="badge bg-info">Check</span>
                                                                 @elseif($data->status == 2)
-                                                                    <span class="badge bg-danger">Remand</span>
+                                                                    <span class="badge bg-warning">Waiting Approval</span>
                                                                 @elseif($data->status == 3)
+                                                                    <span class="badge bg-danger">Remand</span>
+                                                                @elseif($data->status == 4)
                                                                     <span class="badge bg-success">Done</span>
                                                                 @else
                                                                     <span class="badge bg-secondary">Unknown Status</span>
                                                                 @endif
                                                             </td>
+
 
                                                             <td>
                                                                 <div class="btn-group">
@@ -144,18 +147,27 @@
                                                                         <i class="fas fa-trash-alt"></i>
                                                                     </button>
                                                                     @if($data->status == 1)
-                                                                        <a href="checksheet/approve/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Approve">
-                                                                            <i class="fas fa-check"></i>
-                                                                        </a>
-                                                                    @elseif($data->status == 0)
-                                                                        <a href="checksheet/fill/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Fill">
-                                                                            <i class="fas fa-pencil-alt"></i>
-                                                                        </a>
-                                                                        @elseif($data->status == 2)
-                                                                        <a href="checksheet/update/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Update">
-                                                                            <i class="fas fa-pencil-alt"></i>
-                                                                        </a>
-                                                                    @endif
+                                                                    <a href="checksheet/checkher/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Check">
+                                                                        <i class="fas fa-search"></i>
+                                                                    </a>
+                                                                @elseif($data->status == 0)
+                                                                    <a href="checksheet/fill/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Fill">
+                                                                        <i class="fas fa-pencil-alt"></i>
+                                                                    </a>
+                                                                @elseif($data->status == 2)
+                                                                    <a href="checksheet/approve/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Approve">
+                                                                        <i class="fas fa-thumbs-up"></i>
+                                                                    </a>
+                                                                @elseif($data->status == 3)
+                                                                    <a href="checksheet/update/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Update">
+                                                                        <i class="fas fa-pencil-alt"></i>
+                                                                    </a>
+                                                                @else
+                                                                    <a href="checksheet/generate-pdf/{{ encrypt($data->id) }}" class="btn btn-success btn-sm" title="Generate PDF">
+                                                                        <i class="fas fa-file-pdf"></i>
+                                                                    </a>
+                                                                @endif
+
                                                                     <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                         <span class="visually-hidden">Toggle Dropdown</span>
                                                                     </button>

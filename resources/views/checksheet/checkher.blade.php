@@ -21,40 +21,54 @@
             <section class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <form action="{{ url('/checksheet/update/detail') }}" method="POST">
+
                         <div class="col-12 mb-4">
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h3 class="card-title">{{$itemHead->machine_name}}</h3>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                        Submit
-                                    </button>
+                                    @if($itemHead->status == 1)
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal">
+                                            Submit
+                                        </button>
+                                    @endif
                                 </div>
-                                 <!-- Modal structure -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Input Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="pic" class="form-label">PIC</label>
-                            <input type="text" value="{{$itemHead->pic}}" class="form-control" id="pic" name="pic">
-                        </div>
-                        <div class="mb-3">
-                            <label for="remarks" class="form-label">Remarks</label>
-                            <textarea class="form-control" id="remarks" name="remarks">{{$itemHead->remark}}</textarea>
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
+                                <!-- Approve Modal -->
+                                <div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="approveModalLabel">Approve or Remand Checksheet</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ url('/checksheet/checker/store') }}" method="POST">
+                                                @csrf
+                                                <input type="text" name="id" value="{{$itemHead->id}}" hidden>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Select Action:</label>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="approvalStatus" id="approveRadio" value="approve" checked>
+                                                            <label class="form-check-label" for="approveRadio">Approve</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="approvalStatus" id="remandRadio" value="remand">
+                                                            <label class="form-check-label" for="remandRadio">Remand</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="remark" class="form-label">Remark:</label>
+                                                        <textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
 
                               <!-- /.card-header -->
                               <div class="card-body">
@@ -66,7 +80,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">No. Document</label>
-                                                        <input type="text" class="form-control" id="no_document" name="no_document" placeholder="Enter No. Document" value="{{$itemHead->document_number}}" readonly required>
+                                                        <input type="text" class="form-control" id="no_document" name="no_document" placeholder="Enter No. Document" value="{{$itemHead->no_document}}" readonly required>
                                                     </div>
                                                 </div>
                                                 @if($itemHead->type == 'Mechanic')
@@ -97,23 +111,35 @@
                                                     </div>
                                                 @endif
 
-                                                <div class="col-md-6 mb-4">
+                                                <div class="col-md-4 mb-4">
                                                     <div class="form-group">
                                                         <label for="">Effective Date</label>
                                                         <input type="date" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Effective Date"  value="{{$itemHead->effective_date}}" readonly required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="">Revision</label>
                                                         <input type="text" class="form-control" id="revision" name="revision" placeholder="Enter Revision" value="{{$itemHead->revision}}" readonly required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="">PIC</label>
+                                                        <input type="text" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Effective Date"  value="{{$itemHead->pic}}" readonly required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="">Remarks</label>
+                                                        <input type="text" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Effective Date"  value="{{$itemHead->remark}}" readonly required>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">OP No.</label>
-                                                        <input type="text" class="form-control" id="op_number" name="op_number" placeholder="Enter OP No." value="{{$itemHead->op_number}}" readonly required>
+                                                        <input type="text" class="form-control" id="op_number" name="op_number" placeholder="Enter OP No." value="{{$itemHead->op_name}}" readonly required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
@@ -125,7 +151,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">Planning Date</label>
-                                                        <input  value="{{$itemHead->planning_date}}" type="date" class="form-control" id="planning_date" name="planning_date" placeholder="Enter Planning Date" required>
+                                                        <input readonly value="{{$itemHead->planning_date}}" type="date" class="form-control" id="planning_date" name="planning_date" placeholder="Enter Planning Date" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
@@ -143,7 +169,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="form-group">
                                                         <label for="">Actual Date</label>
-                                                        <input  value="{{$itemHead->actual_date}}" type="date" class="form-control" id="actual_date" name="actual_date" placeholder="Enter Actual Date" required>
+                                                        <input readonly value="{{$itemHead->actual_date}}" type="date" class="form-control" id="actual_date" name="actual_date" placeholder="Enter Actual Date" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -160,11 +186,10 @@
 
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h3 class="card-title">{{$itemHead->machine_name}}</h3>
-
+                                <div class="card-header">
+                                    <h3 class="card-title">{{ $itemHead->machine_name }}</h3>
                                 </div>
-                                <input type="text" name="id" value="{{$id}}" hidden>
+
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="mb-3 col-sm-12">
@@ -186,42 +211,41 @@
                                                     @php
                                                         $checksheetType = $items[0]['checksheet_type'];
                                                     @endphp
-                                                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ Str::slug($checksheetCategory) }}-content" role="tabpanel"
-                                                        aria-labelledby="{{ Str::slug($checksheetCategory) }}-tab">
-                                                        <br>
-                                                        <h1>{{ $checksheetType }}</h1> <!-- Display the asset category -->
-                                                        <table class="table table-bordered table-striped">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Description</th>
-                                                                    <th>Spec</th>
-                                                                    <th>Act</th>
-                                                                    <th>B</th>
-                                                                    <th>R</th>
-                                                                    <th>G</th>
-                                                                    <th>PP</th>
-                                                                    <th>Judge</th>
-                                                                    <th>Remarks</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($items as $item)
-                                                                <tr>
-                                                                    <td>{{ $item->item_name }}</td>
-                                                                    <td>{{ $item->spec }}</td>
-                                                                    <td><input type="text" name="items[{{ $item->item_name }}][act]" value="{{ $item->act }}"></td>
-                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][B]" value="1" {{ $item->B ? 'checked' : '' }}></td>
-                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][R]" value="1" {{ $item->R ? 'checked' : '' }}></td>
-                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][G]" value="1" {{ $item->G ? 'checked' : '' }}></td>
-                                                                    <td><input type="checkbox" class="checkbox" name="items[{{ $item->item_name }}][PP]" value="1" {{ $item->PP ? 'checked' : '' }}></td>
-                                                                    <td><input type="text" name="items[{{ $item->item_name }}][judge]" value="{{ $item->judge }}"></td>
-                                                                    <td><input type="text" name="items[{{ $item->item_name }}][remarks]" value="{{ $item->remarks }}"></td>
-                                                                </tr>
-                                                            @endforeach
-
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ Str::slug($checksheetCategory) }}-content" role="tabpanel"
+                                                            aria-labelledby="{{ Str::slug($checksheetCategory) }}-tab">
+                                                            <br>
+                                                            <h1>{{ $checksheetType }}</h1> <!-- Display the asset category -->
+                                                            <table class="table table-bordered table-striped">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Description</th>
+                                                                        <th>Spec</th>
+                                                                        <th>Act</th>
+                                                                        <th>B</th>
+                                                                        <th>R</th>
+                                                                        <th>G</th>
+                                                                        <th>PP</th>
+                                                                        <th>Judge</th>
+                                                                        <th>Remarks</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($items as $item)
+                                                                        <tr>
+                                                                            <td>{{ $item->item_name }}</td>
+                                                                            <td>{{ $item->spec }}</td>
+                                                                            <td>{{ $item->act }}</td>
+                                                                            <td><input type="checkbox" {{ $item->B ? 'checked' : '' }} disabled></td>
+                                                                            <td><input type="checkbox" {{ $item->R ? 'checked' : '' }} disabled></td>
+                                                                            <td><input type="checkbox" {{ $item->G ? 'checked' : '' }} disabled></td>
+                                                                            <td><input type="checkbox" {{ $item->PP ? 'checked' : '' }} disabled></td>
+                                                                            <td>{{ $item->judge }}</td>
+                                                                            <td>{{ $item->remarks }}</td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -234,7 +258,6 @@
                         </div>
                         <!-- /.col -->
                     </div>
-                </form>
                     <!-- /.row -->
                 </div>
                 <!-- /.container-fluid -->
@@ -244,23 +267,4 @@
         <!-- /.content-wrapper -->
     </div>
 </main>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkboxes = document.querySelectorAll('.checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                if (this.checked) {
-                    // Uncheck other checkboxes in the same row
-                    const row = this.parentElement.parentElement;
-                    const otherCheckboxes = row.querySelectorAll('.checkbox');
-                    otherCheckboxes.forEach(otherCheckbox => {
-                        if (otherCheckbox !== this) {
-                            otherCheckbox.checked = false;
-                        }
-                    });
-                }
-            });
-        });
-    });
-    </script>
 @endsection

@@ -26,7 +26,7 @@
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h3 class="card-title">{{$itemHead->machine_name}}</h3>
-                                    @if($itemHead->status == 1)
+                                    @if($itemHead->status == 2)
                                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal">
                                             Submit
                                         </button>
@@ -111,16 +111,28 @@
                                                     </div>
                                                 @endif
 
-                                                <div class="col-md-6 mb-4">
+                                                <div class="col-md-4 mb-4">
                                                     <div class="form-group">
                                                         <label for="">Effective Date</label>
                                                         <input type="date" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Effective Date"  value="{{$itemHead->effective_date}}" readonly required>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="">Revision</label>
                                                         <input type="text" class="form-control" id="revision" name="revision" placeholder="Enter Revision" value="{{$itemHead->revision}}" readonly required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="">PIC</label>
+                                                        <input type="text" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Effective Date"  value="{{$itemHead->pic}}" readonly required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 mb-4">
+                                                    <div class="form-group">
+                                                        <label for="">Remarks</label>
+                                                        <input type="text" class="form-control" id="effective_date" name="effective_date" placeholder="Enter Effective Date"  value="{{$itemHead->remark}}" readonly required>
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -256,3 +268,4 @@
     </div>
 </main>
 @endsection
+

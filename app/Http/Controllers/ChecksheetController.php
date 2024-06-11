@@ -17,8 +17,10 @@ use App\Models\ChecksheetJourneyLog;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ApprovalReminder;
 use App\Mail\RemandNotification;
+use App\Mail\CheckerReminder;
 
 use DB;
+use PDF;
 
 class ChecksheetController extends Controller
 {
@@ -131,7 +133,20 @@ class ChecksheetController extends Controller
         // Mendapatkan item-item yang akan disimpan
         $items = $formData['items'];
 
-        $getMail = Rule::where('rule_name','Approval')->get();
+        // Mendapatkan nilai pic dan remarks dari request
+        $pic = $formData['pic'];
+        $remarks = $formData['remarks'];
+
+        $getMail = Rule::where('rule_name', 'Checker')->get();
+
+        // Update pic and remarks for the header id
+        $checksheetHead = ChecksheetFormHead::find($idHeader);
+        if ($checksheetHead) {
+            $checksheetHead->pic = $pic;
+            $checksheetHead->remark = $remarks;
+            $checksheetHead->status = 1; // Update status to 1
+            $checksheetHead->save();
+        }
 
         // Menyimpan setiap item ke dalam tabel
         foreach ($items as $itemName => $itemData) {
@@ -150,23 +165,16 @@ class ChecksheetController extends Controller
             $checksheetDetail->save();
         }
 
-        // Update status of checksheet_head to 1
-        $checksheetHead = ChecksheetFormHead::find($idHeader);
-        if ($checksheetHead) {
-            $checksheetHead->status = 1;
-            $checksheetHead->save();
-        }
-
         foreach ($getMail as $mail) {
             if ($checksheetHead && $checksheetHead->status == 1) {
-
-                Mail::to($mail->rule_value)->send(new ApprovalReminder($checksheetHead));
+                Mail::to($mail->rule_value)->send(new CheckerReminder($checksheetHead));
             }
         }
 
         // Redirect atau response sesuai kebutuhan Anda
         return redirect()->route('machine')->with('status', 'Checksheet submitted successfully.');
     }
+
 
 
     public function checksheetDetail($id){
@@ -237,6 +245,26 @@ class ChecksheetController extends Controller
         return view('checksheet.approve', compact('itemHead', 'groupedResults', 'id'));
     }
 
+    public function checksheetChecker($id){
+        $id = decrypt($id);
+        $itemHead = ChecksheetFormHead::where('id', $id)->first();
+        $itemDetail = ChecksheetFormDetail::where('id_header', $id)->get();
+
+        // Group item details based on asset categories
+        $groupedResults = [];
+        foreach ($itemDetail as $detail) {
+            // Query the checksheet_items table to get the spec
+            $item = ChecksheetItem::where('item_name', $detail->item_name)->first();
+
+            // Add the spec to the detail object
+            $detail->spec = $item ? $item->spec : ''; // If item not found, set spec to empty string
+
+            $groupedResults[$detail->checksheet_category][] = $detail;
+        }
+
+        return view('checksheet.checkher', compact('itemHead', 'groupedResults', 'id'));
+    }
+
     public function checksheetApproveStore(Request $request)
     {
         $checksheetHeader = ChecksheetFormHead::findOrFail($request->id);
@@ -245,10 +273,47 @@ class ChecksheetController extends Controller
 
         switch ($request->approvalStatus) {
             case 'approve':
-                $checksheetHeader->status = 3; // Waiting Approval
+                $checksheetHeader->status = 4; // Waiting Approval
                 break;
             case 'remand':
-                $checksheetHeader->status = 2; // Remand
+                $checksheetHeader->status = 3; // Remand
+                Mail::to($getMail->email) // Replace with appropriate recipient
+                    ->send(new RemandNotification($checksheetHeader, $request->remark));
+                break;
+            default:
+                break;
+        }
+        $checksheetHeader->save();
+
+        $log = new ChecksheetJourneyLog();
+        $log->checksheet_id = $request->id;
+        $log->user_id = Auth::id();
+        $log->action = $checksheetHeader->status;
+        $log->remark = $request->remark;
+        $log->save();
+
+        return redirect()->route('machine')->with('status', 'Checksheet submitted successfully.');
+    }
+
+    public function checksheetCheckerStore(Request $request)
+    {
+        $checksheetHeader = ChecksheetFormHead::findOrFail($request->id);
+        $checksheetHead = ChecksheetFormHead::findOrFail($request->id);
+
+        $getMail = User::where('name',$checksheetHeader->created_by)->first();
+
+        switch ($request->approvalStatus) {
+            case 'approve':
+                $checksheetHeader->status = 2; // Waiting Approval
+                $getMail = Rule::where('rule_name', 'Approval')->get();
+                foreach ($getMail as $mail) {
+                    if ($checksheetHead && $checksheetHead->status == 1) {
+                        Mail::to($mail->rule_value)->send(new ApprovalReminder($checksheetHead));
+                    }
+                }
+                break;
+            case 'remand':
+                $checksheetHeader->status = 3; // Remand
                 Mail::to($getMail->email) // Replace with appropriate recipient
                     ->send(new RemandNotification($checksheetHeader, $request->remark));
                 break;
@@ -287,47 +352,103 @@ class ChecksheetController extends Controller
         return view('checksheet.update', compact('itemHead', 'groupedResults', 'id'));
     }
 
-    public function checksheetUpdateDetail(Request $request){
-        // Retrieve request data
-        $requestData = $request->all();
-        $id = $requestData['id'];
-        $noDocument = $requestData['no_document'];
+    public function checksheetUpdateDetail(Request $request)
+{
+    // Retrieve request data
+    $requestData = $request->all();
+    $id = $requestData['id'];
+    $noDocument = $requestData['no_document'];
 
-        // Update values in the checksheet_form_details table
-        foreach ($requestData['items'] as $itemName => $itemData) {
-            $detail = ChecksheetFormDetail::where('id_header', $id)
-                ->where('item_name', $itemName)
-                ->first();
-            if ($detail) {
-                $detail->update($itemData);
+    // Update values in the checksheet_form_details table
+    foreach ($requestData['items'] as $itemName => $itemData) {
+        $detail = ChecksheetFormDetail::where('id_header', $id)
+            ->where('item_name', $itemName)
+            ->first();
+        if ($detail) {
+            $detail->update($itemData);
+        }
+    }
+
+    // Check for changes in checksheet_form_details
+    $detailsBeforeUpdate = ChecksheetFormDetail::where('id_header', $id)
+        ->pluck('id', 'item_name');
+
+    // Update values in the checksheet_form_heads table if necessary
+    $head = ChecksheetFormHead::find($id);
+
+    if ($head) {
+        // Prepare an array for fields that need updating
+        $updates = [];
+
+        // Update pic and remarks if they have changed
+        if ($head->pic !== $requestData['pic']) {
+            $updates['pic'] = $requestData['pic'];
+        }
+        if ($head->remark !== $requestData['remarks']) {
+            $updates['remark'] = $requestData['remarks'];
+        }
+
+        // Update other fields in checksheet_form_heads if necessary
+        $otherFields = ['no_document', 'department', 'shop', 'effective_date', 'revision', 'op_number', 'mfg_date', 'planning_date', 'machine_name', 'process', 'actual_date'];
+        foreach ($otherFields as $field) {
+            if (isset($requestData[$field]) && $head->$field !== $requestData[$field]) {
+                $updates[$field] = $requestData[$field];
             }
         }
 
-        // Check for changes in checksheet_form_details
-        $detailsBeforeUpdate = ChecksheetFormDetail::where('id_header', $id)
-            ->pluck('id', 'item_name');
-
-        // Update values in the checksheet_form_heads table if necessary
-        $head = ChecksheetFormHead::find($id);
-        if ($head) {
-            $head->update($requestData);
+        if (!empty($updates)) {
+            $head->update($updates);
 
             // Log changes in checksheet_journey_logs for checksheet_form_heads
             $logData = [
                 'checksheet_id' => $id,
                 'user_id' => auth()->id(),
-                'action' => '5',
-                'remark' => 'Checksheet updated',
+                'action' => '5', // Assuming action '5' represents an update
+                'remark' => 'Checksheet updated: ' . implode(', ', array_keys($updates)),
             ];
             ChecksheetJourneyLog::create($logData);
-
-            // Update checksheet status to 1 (done)
-            $head->update(['status' => 1]);
         }
 
-        // Redirect to /checksheet
-        return redirect('/checksheet')->with('status', 'Checksheet updated successfully');
+        // Update checksheet status to 1 (done)
+        $head->update(['status' => 1]);
     }
+
+    // Retrieve emails of users with the "Checker" role and send reminder emails
+    $getMail = Rule::where('rule_name', 'Checker')->get();
+    foreach ($getMail as $mail) {
+        if ($head && $head->status == 1) {
+            Mail::to($mail->rule_value)->send(new CheckerReminder($head));
+        }
+    }
+
+    // Redirect to /checksheet with success message
+    return redirect('/checksheet')->with('status', 'Checksheet updated successfully');
+}
+
+public function generatePdf($id)
+{
+    $id = decrypt($id);
+
+    // Retrieve the checksheet head
+    $checksheetHead = ChecksheetFormHead::find($id);
+
+    // Retrieve the checksheet details with the spec from the checksheet_items table
+    $checksheetDetails = ChecksheetFormDetail::where('id_header', $id)
+        ->leftJoin('checksheet_items', 'checksheet_form_details.item_name', '=', 'checksheet_items.item_name')
+        ->select('checksheet_form_details.*', 'checksheet_items.spec')
+        ->get();
+
+    // Load the view and pass the data to it
+    $pdf = PDF::loadView('checksheet.pdf', compact('checksheetHead', 'checksheetDetails'))->setPaper('a4', 'landscape');
+
+    // Return the generated PDF
+    return $pdf->download('checksheet_' . $checksheetHead->document_number . '.pdf');
+}
+
+
+
+
+
 
 
 }

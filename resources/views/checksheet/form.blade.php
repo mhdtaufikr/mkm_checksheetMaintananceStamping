@@ -5,13 +5,13 @@
 
 <main>
     <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-        <div class="container-xl px-4">
+        <div class="container-fluid px-4">
             <div class="page-header-content pt-4">
             </div>
         </div>
     </header>
 <!-- Main page content-->
-<div class="container-xl px-4 mt-n10">
+<div class="container-fluid px-4 mt-n10">
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->

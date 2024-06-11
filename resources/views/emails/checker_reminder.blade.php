@@ -42,11 +42,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Approval Needed</h1>
-        <p>This is a reminder to approve the pending checksheet <strong>{{$checksheetHead->machine_name}}</strong>.</p>
-        <p>To review and approve the checksheet, please click on the link below:</p>
+        <h1>Check Needed</h1>
+        <p>This is a reminder to check the pending checksheet <strong>{{$checksheetHead->machine_name}}</strong>.</p>
+        <p>To review and check the checksheet, please click on the link below:</p>
 
-        <p><a href="{{ url('/checksheet/approve/'.encrypt($checksheetHead->id)) }}">Approve Checksheet</a></p>
+        <p><a href="{{ url('/checksheet/checkher/'.encrypt($checksheetHead->id)) }}">Check Checksheet</a></p>
 
         <p>Thank you for your attention to this matter.</p>
 
