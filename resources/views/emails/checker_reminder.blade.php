@@ -44,6 +44,7 @@
     <div class="container">
         <h1>Check Needed</h1>
         <p>This is a reminder to check the pending checksheet <strong>{{$checksheetHead->machine_name}}</strong>.</p>
+        <p>Remarks: <strong>{{ $checksheetHead->remark }}</strong></p>
         <p>To review and check the checksheet, please click on the link below:</p>
 
         <p><a href="{{ url('/checksheet/checkher/'.encrypt($checksheetHead->id)) }}">Check Checksheet</a></p>

@@ -205,16 +205,16 @@
                                                                                                 <td>{{ $loop->iteration }}</td>
                                                                                                 <td>{{ $log->user->name }}</td>
                                                                                                 <td>
-                                                                                                    @if ($log->action == 0)
-                                                                                                        <span class="badge bg-primary">On Check</span>
-                                                                                                    @elseif ($log->action == 1)
+                                                                                                    @if($log->action == 0)
+                                                                                                        <span class="badge bg-primary">Update</span>
+                                                                                                    @elseif($log->action == 1)
+                                                                                                        <span class="badge bg-info">Check</span>
+                                                                                                    @elseif($log->action == 2)
                                                                                                         <span class="badge bg-warning">Waiting Approval</span>
-                                                                                                    @elseif ($log->action == 2)
+                                                                                                    @elseif($log->action == 3)
                                                                                                         <span class="badge bg-danger">Remand</span>
-                                                                                                    @elseif ($log->action == 3)
+                                                                                                    @elseif($log->action == 4)
                                                                                                         <span class="badge bg-success">Done</span>
-                                                                                                    @elseif ($log->action == 5)
-                                                                                                        <span class="badge bg-info">Update</span>
                                                                                                     @else
                                                                                                         <span class="badge bg-secondary">Unknown Status</span>
                                                                                                     @endif

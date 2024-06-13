@@ -58,12 +58,12 @@
 
                                                     <div class="mb-3">
                                                         <label for="remark" class="form-label">Remark:</label>
-                                                        <textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
+                                                        <textarea class="form-control" id="remark" name="remark" rows="3" required>{{$itemHead->remark}}</textarea>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                    <button type="submit" class="btn btn-primary" id="oneClickButton">Submit</button>
                                                 </div>
                                             </form>
                                         </div>

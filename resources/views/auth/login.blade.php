@@ -86,7 +86,7 @@
                                         </div>
                                         <!-- Form Group (login box)-->
                                         <div class="text-center mb-3">
-                                            <button type="submit" class="btn btn-dark">Login</button>
+                                            <button type="submit" class="btn btn-dark" id="oneClickButton">Login</button>
                                         </div>
                                     </form>
                                 </div>

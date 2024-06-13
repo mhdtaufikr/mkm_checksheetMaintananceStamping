@@ -67,22 +67,22 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/master/checksheet/item/update/{id}', [MachineController::class, 'updateChecksheetItem'])->middleware(['checkRole:IT,Super Admin']);
 
     //Master Checksheet form/checksheet/scan
-    Route::get('/checksheet', [ChecksheetController::class, 'index'])->middleware(['checkRole:IT,Super Admin,Approval,Checker'])->name('machine');
-    Route::post('/checksheet/scan', [ChecksheetController::class, 'checksheetScan'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
-    Route::post('/checksheet/store', [ChecksheetController::class, 'storeHeadForm'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
-    Route::get('/checksheet/fill/{id}', [ChecksheetController::class, 'checksheetfill'])->middleware(['checkRole:IT,Super Admin,Approval,Checker'])->name('fill');
-    Route::post('/checksheet/store/detail', [ChecksheetController::class, 'storeDetailForm'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
-    Route::get('/checksheet/detail/{id}', [ChecksheetController::class, 'checksheetDetail'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
-    Route::post('/checksheet/signature', [ChecksheetController::class, 'checksheetSignature'])->middleware(['checkRole:IT,Super Admin,Approval,Checker']);
+    Route::get('/checksheet', [ChecksheetController::class, 'index'])->middleware(['checkRole:IT,Super Admin,Approval,Checker,User'])->name('machine');
+    Route::post('/checksheet/scan', [ChecksheetController::class, 'checksheetScan'])->middleware(['checkRole:IT,Super Admin,User']);
+    Route::post('/checksheet/store', [ChecksheetController::class, 'storeHeadForm'])->middleware(['checkRole:IT,Super Admin,User']);
+    Route::get('/checksheet/fill/{id}', [ChecksheetController::class, 'checksheetfill'])->middleware(['checkRole:IT,Super Admin,User'])->name('fill');
+    Route::post('/checksheet/store/detail', [ChecksheetController::class, 'storeDetailForm'])->middleware(['checkRole:IT,Super Admin,User']);
+    Route::get('/checksheet/detail/{id}', [ChecksheetController::class, 'checksheetDetail'])->middleware(['checkRole:IT,Approval,Checker,Super Admin,User']);
+    Route::post('/checksheet/signature', [ChecksheetController::class, 'checksheetSignature'])->middleware(['checkRole:IT,Super Admin,User']);
 
     Route::get('/checksheet/approve/{id}', [ChecksheetController::class, 'checksheetApprove'])->middleware(['checkRole:IT,Super Admin,Approval']);
     Route::post('/checksheet/approve/store', [ChecksheetController::class, 'checksheetApproveStore'])->middleware(['checkRole:IT,Super Admin,Approval']);
-    Route::get('checksheet/update/{id}', [ChecksheetController::class, 'checksheetUpdate'])->middleware(['checkRole:IT,Super Admin,Approval']);
-    Route::post('/checksheet/update/detail', [ChecksheetController::class, 'checksheetUpdateDetail'])->middleware(['checkRole:IT,Super Admin,Approval']);
+    Route::get('checksheet/update/{id}', [ChecksheetController::class, 'checksheetUpdate'])->middleware(['checkRole:IT,Super Admin,User']);
+    Route::post('/checksheet/update/detail', [ChecksheetController::class, 'checksheetUpdateDetail'])->middleware(['checkRole:IT,Super Admin,User']);
 
-    Route::get('/checksheet/checkher/{id}', [ChecksheetController::class, 'checksheetChecker'])->middleware(['checkRole:IT,Super Admin,Approval']);
-    Route::post('/checksheet/checker/store', [ChecksheetController::class, 'checksheetCheckerStore'])->middleware(['checkRole:IT,Super Admin,Approval']);
+    Route::get('/checksheet/checkher/{id}', [ChecksheetController::class, 'checksheetChecker'])->middleware(['checkRole:IT,Super Admin,Checker']);
+    Route::post('/checksheet/checker/store', [ChecksheetController::class, 'checksheetCheckerStore'])->middleware(['checkRole:IT,Super Admin,Checker']);
 
-    Route::get('checksheet/generate-pdf/{id}', [ChecksheetController::class, 'generatePdf'])->middleware(['checkRole:IT,Super Admin,Approval']);
+    Route::get('checksheet/generate-pdf/{id}', [ChecksheetController::class, 'generatePdf'])->middleware(['checkRole:IT,Super Admin,Approval,Checker,User']);
 
 });

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ApprovalReminder;
 use App\Mail\RemandNotification;
 use App\Mail\CheckerReminder;
-
+use App\Mail\ChecksheetApprovalNotification;
 use DB;
 use PDF;
 
@@ -27,8 +27,12 @@ class ChecksheetController extends Controller
     public function index(Request $request)
 {
     if (Auth::user()->role == "Checker") {
+        $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
+    }elseif(Auth::user()->role == "Approval") {
+        $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
+    }elseif(Auth::user()->role == "user"){
         $item = ChecksheetFormHead::where('created_by',Auth::user()->name)->orderBy('created_at', 'desc')->get();
-    }else {
+    }else{
         $item = ChecksheetFormHead::orderBy('created_at', 'desc')->get();
     }
     // Retrieve all ChecksheetFormHead records sorted by the newest data
@@ -45,10 +49,8 @@ class ChecksheetController extends Controller
     return view('checksheet.index', compact('item', 'machines'));
 }
 
+   public function checksheetScan(Request $request){
 
-
-
-    public function checksheetScan(Request $request){
 
         if (empty($request->mechine)) {
 
@@ -266,34 +268,57 @@ class ChecksheetController extends Controller
     }
 
     public function checksheetApproveStore(Request $request)
-    {
-        $checksheetHeader = ChecksheetFormHead::findOrFail($request->id);
+{
+    $checksheetHeader = ChecksheetFormHead::findOrFail($request->id);
+    $getMail = User::where('name', $checksheetHeader->created_by)->first();
+    $authUser = Auth::user(); // Get the authenticated user
 
-        $getMail = User::where('name',$checksheetHeader->created_by)->first();
+    switch ($request->approvalStatus) {
+        case 'approve':
+            $checksheetHeader->status = 4; // Waiting Approval
 
-        switch ($request->approvalStatus) {
-            case 'approve':
-                $checksheetHeader->status = 4; // Waiting Approval
-                break;
-            case 'remand':
-                $checksheetHeader->status = 3; // Remand
-                Mail::to($getMail->email) // Replace with appropriate recipient
-                    ->send(new RemandNotification($checksheetHeader, $request->remark));
-                break;
-            default:
-                break;
-        }
-        $checksheetHeader->save();
+            // Generate PDF
+            $pdf = $this->generatePdfmail($checksheetHeader->id);
 
-        $log = new ChecksheetJourneyLog();
-        $log->checksheet_id = $request->id;
-        $log->user_id = Auth::id();
-        $log->action = $checksheetHeader->status;
-        $log->remark = $request->remark;
-        $log->save();
+            // Send email with PDF to the authenticated user
+            Mail::to($authUser->email)
+                ->send(new ChecksheetApprovalNotification($checksheetHeader, $pdf));
 
-        return redirect()->route('machine')->with('status', 'Checksheet submitted successfully.');
+            break;
+        case 'remand':
+            $checksheetHeader->status = 3; // Remand
+            Mail::to($getMail->email) // Replace with appropriate recipient
+                ->send(new RemandNotification($checksheetHeader, $request->remark));
+            break;
+        default:
+            break;
     }
+    $checksheetHeader->save();
+
+    $log = new ChecksheetJourneyLog();
+    $log->checksheet_id = $request->id;
+    $log->user_id = Auth::id();
+    $log->action = $checksheetHeader->status;
+    $log->remark = $request->remark;
+    $log->save();
+
+    return redirect()->route('machine')->with('status', 'Checksheet submitted successfully.');
+}
+
+public function generatePdfmail($id)
+{
+    $checksheetHead = ChecksheetFormHead::find($id);
+    $checksheetDetails = ChecksheetFormDetail::where('id_header', $id)
+        ->leftJoin('checksheet_items', 'checksheet_form_details.item_name', '=', 'checksheet_items.item_name')
+        ->select('checksheet_form_details.*', 'checksheet_items.spec')
+        ->get();
+
+    $pdf = PDF::loadView('checksheet.pdf', compact('checksheetHead', 'checksheetDetails'))->setPaper('a4', 'landscape');
+
+    return $pdf;
+}
+
+
 
     public function checksheetCheckerStore(Request $request)
     {
@@ -444,11 +469,5 @@ public function generatePdf($id)
     // Return the generated PDF
     return $pdf->download('checksheet_' . $checksheetHead->document_number . '.pdf');
 }
-
-
-
-
-
-
 
 }

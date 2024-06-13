@@ -92,7 +92,6 @@
                             </div>
                           </div>
 
-
                     <div class="col-sm-12">
                       <!--alert success -->
                       @if (session('status'))

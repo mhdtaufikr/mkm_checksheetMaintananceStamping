@@ -91,5 +91,17 @@
             console.error("Service workers are not supported.");
         }
         </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const oneClickButton = document.getElementById('oneClickButton');
+                const loginForm = oneClickButton.closest('form');
+
+                loginForm.addEventListener('submit', function(event) {
+                    oneClickButton.disabled = true;
+                    oneClickButton.textContent = 'Loading...'; // Optional: change button text to indicate loading
+                });
+            });
+            </script>
+
     </body>
 </html>
