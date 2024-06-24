@@ -1,7 +1,7 @@
 {
     "name": "MKM Checksheet Maintanance Stamping",
     "short_name": "MKM",
-    "start_url": "/index.php",
+    "start_url": "/home",
     "background_color": "#6777ef",
     "description": "MKM Checksheet Maintanance Stamping",
     "display": "fullscreen",

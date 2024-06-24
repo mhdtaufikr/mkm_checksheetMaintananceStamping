@@ -29,6 +29,7 @@ use App\Http\Controllers\ChecksheetController;
 Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/auth/login', [AuthController::class, 'postLogin']);
 Route::get('/logout', [AuthController::class, 'logout']);
+Route::post('request/access', [AuthController::class, 'requestAccess']);
 
 
 Route::middleware(['auth'])->group(function () {
